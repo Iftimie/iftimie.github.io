@@ -1,0 +1,40 @@
+MPLINK 4.40, Linker
+Linker Map File - Created Sat Dec 13 14:35:47 2025
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x00005c
+      .config_0FFF_MAIN.O       code   0x000fff    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x00002d      
+                            0x000fff    0x000fff      
+            47 out of 261 program addresses used, program memory utilization is 18%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                    DELAY   0x000023    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PIC10F200_CHARLIEPLEXING_LED\main.asm
+               DELAY_LOOP   0x000027    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PIC10F200_CHARLIEPLEXING_LED\main.asm
+                     INIT   0x000000    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PIC10F200_CHARLIEPLEXING_LED\main.asm
+                     LOOP   0x000004    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PIC10F200_CHARLIEPLEXING_LED\main.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     INIT   0x000000    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PIC10F200_CHARLIEPLEXING_LED\main.asm
+                     LOOP   0x000004    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PIC10F200_CHARLIEPLEXING_LED\main.asm
+                    DELAY   0x000023    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PIC10F200_CHARLIEPLEXING_LED\main.asm
+               DELAY_LOOP   0x000027    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PIC10F200_CHARLIEPLEXING_LED\main.asm
+
+

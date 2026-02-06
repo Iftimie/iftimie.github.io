@@ -1,0 +1,156 @@
+#include <Arduino.h>
+#include "config.h"
+#include "oled_display.h"
+#include "deepseek_client.h"
+#include "bluetooth_audio.h"
+#include "touch_input.h"
+#include "conversation_manager.h"
+
+void setup() {
+    Serial.begin(115200);
+    delay(1000);
+    Serial.println("=== ESP32-CAM DeskMate AI Companion ===");
+    
+    // Initialize status LED
+    pinMode(STATUS_LED_PIN, OUTPUT);
+    digitalWrite(STATUS_LED_PIN, HIGH); // Turn on to show startup
+    
+    // Initialize components
+    initDisplay();
+    displaySplashScreen();
+    
+    // Initialize SD card and audio
+    initSDCard();
+    initBluetooth();
+    connectToHeadset();
+    
+    // Initialize touch sensor
+    initTouchSensor();
+    
+    // Connect to WiFi
+    if (!connectToWiFi()) {
+        displayText("WiFi Failed");
+        while (true) {
+            delay(1000);
+        }
+    }
+    
+    // Initialize conversation manager
+    initConversationManager();
+    
+    displayText("Ready!");
+    digitalWrite(STATUS_LED_PIN, LOW); // Turn off when ready
+    Serial.println("All components initialized");
+}
+
+void loop() {
+    static unsigned long lastActivityTime = 0;
+    static bool waitingForResponse = false;
+    
+    // Handle touch input
+    handleTouchInput();
+    
+    // Process conversation flow
+    processConversation();
+    
+    // Handle different conversation phases
+    switch (currentPhase) {
+        case PHASE_INITIAL_SUBJECT:
+            if (!waitingForResponse) {
+                String subject = topicManager.getRandomTopic();
+                String prompt = "Give me a short, intriguing fact about: " + subject + 
+                             ". End with: Would you like me to tell you more about this? Yes or No. " +
+                             "Keep it very brief for small OLED display.";
+                
+                displayText("Thinking...");
+                String response = sendToDeepSeek(prompt);
+                
+                if (response != "API Error" && response != "WiFi error" && response != "Parse error") {
+                    displayWrappedText(response);
+                    playNotificationSound();
+                    currentPhase = PHASE_WAITING_RESPONSE;
+                } else {
+                    displayText("Try again...");
+                    delay(2000);
+                    currentPhase = PHASE_INITIAL_TOPIC;
+                }
+                waitingForResponse = true;
+                lastActivityTime = millis();
+            }
+            break;
+            
+        case PHASE_WAITING_RESPONSE:
+            // Wait for touch input
+            if (touchJustPressed()) {
+                String response = getTouchResponse(); // Hardcoded "Yes"
+                
+                if (response == "Yes") {
+                    String subject = topicManager.getCurrentTopic();
+                    String morePrompt = "Tell me more interesting facts about: " + subject + 
+                                     ". Keep sentences short (8-12 words each). " +
+                                     "End with: Want more on this subject? Yes or No";
+                    
+                    displayText("More info...");
+                    String moreResponse = sendToDeepSeek(morePrompt);
+                    
+                    if (moreResponse != "API Error" && moreResponse != "WiFi error" && moreResponse != "Parse error") {
+                        displayWrappedText(moreResponse);
+                        playNotificationSound();
+                        currentPhase = PHASE_WAITING_CONTINUE;
+                    } else {
+                        displayText("Try again...");
+                        delay(2000);
+                        currentPhase = PHASE_INITIAL_TOPIC;
+                    }
+                } else {
+                    // No response - get new subject
+                    currentPhase = PHASE_INITIAL_SUBJECT;
+                }
+                
+                lastActivityTime = millis();
+            }
+            break;
+            
+        case PHASE_WAITING_CONTINUE:
+            if (touchJustPressed()) {
+                String response = getTouchResponse(); // Hardcoded "Yes"
+                
+                if (response == "Yes") {
+                    // Continue with same subject
+                    String subject = topicManager.getCurrentTopic();
+                    String continuePrompt = "Share more fascinating details about: " + subject + 
+                                         ". Keep it engaging and accessible. " +
+                                         "End with: Want more on this subject? Yes or No";
+                    
+                    displayText("More facts...");
+                    String continueResponse = sendToDeepSeek(continuePrompt);
+                    
+                    if (continueResponse != "API Error" && continueResponse != "WiFi error" && continueResponse != "Parse error") {
+                        displayWrappedText(continueResponse);
+                        playNotificationSound();
+                        // Stay in same phase for more responses
+                    } else {
+                        displayText("Try again...");
+                        delay(2000);
+                        currentPhase = PHASE_INITIAL_SUBJECT;
+                    }
+                } else {
+                    // No response - new subject
+                    currentPhase = PHASE_INITIAL_SUBJECT;
+                }
+                
+                lastActivityTime = millis();
+            }
+            break;
+    }
+    
+    // Status LED blink when idle for 30 seconds
+    if (millis() - lastActivityTime > 30000) {
+        static bool ledState = false;
+        ledState = !ledState;
+        digitalWrite(STATUS_LED_PIN, ledState ? HIGH : LOW);
+        delay(100);
+    }
+    
+    delay(100); // Small delay to prevent overwhelming
+}

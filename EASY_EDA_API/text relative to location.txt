@@ -1,0 +1,67 @@
+(function () {
+  try {
+    if (typeof api !== "function") {
+      alert("api() not available");
+      return;
+    }
+
+    const src = api("getSource", { type: "json" });
+    const tracks = src.TRACK || {};
+    const keys = Object.keys(tracks);
+
+    if (keys.length === 0) {
+      alert("No tracks found.");
+      return;
+    }
+
+    const trackKey = keys[0];
+    const t = tracks[trackKey];
+    const layerid = String(t.layerid);
+
+    let p = null;
+
+    // ✅ CORRECT handling for your EasyEDA build
+    if (Array.isArray(t.pointArr) && t.pointArr.length > 0) {
+      const pt = t.pointArr[0];
+      if (typeof pt.x === "number" && typeof pt.y === "number") {
+        p = { x: pt.x, y: pt.y };
+      }
+    }
+
+    if (!p) {
+      alert("Could not extract a valid point from the track.");
+      return;
+    }
+
+    const gId = "gge" + Date.now();
+    const markerText = "HERE_" + gId;
+
+    const insertX = p.x + 100;
+    const insertY = p.y + 100;
+
+    api("createShape", {
+      shapeType: "TEXT",
+      jsonCache: {
+        gId,
+        layerid,
+        x: insertX,
+        y: insertY,
+        text: markerText,
+        fontSize: 20,
+        rotate: 0,
+        mirror: false
+      }
+    });
+
+    alert(
+      "✅ Success\n\n" +
+      "trackKey: " + trackKey + "\n" +
+      "layerid: " + layerid + "\n" +
+      "firstPoint: (" + p.x + ", " + p.y + ")\n" +
+      "textAt: (" + insertX + ", " + insertY + ")"
+    );
+
+  } catch (e) {
+    alert("Error: " + (e.message || e));
+  }
+})();

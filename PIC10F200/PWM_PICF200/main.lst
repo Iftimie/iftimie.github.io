@@ -1,0 +1,214 @@
+MPASM  5.42                          MAIN.ASM   12-13-2025  3:40:06         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 #include "p10f200.inc"
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC10F200 processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2011 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+                      00148         LIST
+0FFF   0FEB           00002     __CONFIG _WDT_OFF & _CP_OFF & _MCLRE_OFF
+                      00003 
+  00000010            00004 counter EQU 0x10
+  00000011            00005 duty    EQU 0x11
+  00000012            00006 j       EQU 0x12
+  00000013            00007 k       EQU 0x13
+  00000014            00008 l       EQU 0x14
+  00000015            00009 direction EQU 0x15
+                      00010 
+                      00011 
+0000                  00012     ORG 0x0000
+                      00013 
+0000                  00014 INIT
+                      00015     ; GP1 = output
+0000   0CFD           00016     MOVLW ~(1 << GP1)
+0001   0006           00017     TRIS GPIO
+                      00018 
+0002   0070           00019     CLRF counter        ; counter = 0
+0003   0073           00020         CLRF k
+0004   0074           00021         CLRF l
+0005   0071           00022         CLRF duty
+0006   0075           00023         CLRF direction
+                      00024 
+0007                  00025 DUTY_CHANGE_LOOP
+0007   0615           00026     BTFSC direction, 0
+0008   0A0F           00027     GOTO DUTY_DOWN
+                      00028 
+0009                  00029 DUTY_UP
+0009   02B1           00030     INCF    duty, F
+000A   0C1E           00031     MOVLW   .30
+000B   0191           00032     XORWF   duty, W
+000C   0643           00033     BTFSC   STATUS, Z
+000D   0515           00034     BSF     direction, 0     ; go DOWN
+000E   0A12           00035     GOTO    DUTY_OK
+                      00036 
+000F                  00037 DUTY_DOWN
+000F   00F1           00038     DECF    duty, F
+0010   0643           00039     BTFSC   STATUS, Z
+0011   0415           00040     BCF     direction, 0     ; go UP
+                      00041 
+0012                  00042 DUTY_OK
+0012   0074           00043     CLRF l               ; reset ramp timing counters so ramp is smooth
+0013   0073           00044     CLRF k
+MPASM  5.42                          MAIN.ASM   12-13-2025  3:40:06         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00045 
+0014                  00046 L_LOOP
+0014   02B4           00047         INCF    l, F    
+0015   0C03           00048         MOVLW   .3        ; value to compare against
+0016   0094           00049         SUBWF   l, W       ; W = l - 10
+0017   0643           00050         BTFSC   STATUS, Z   ; skip next if Z == 0
+0018   0A07           00051         GOTO    DUTY_CHANGE_LOOP
+                      00052 
+0019                  00053 K_LOOP
+0019   02B3           00054         INCF    k, F    
+001A   0643           00055         BTFSC   STATUS, Z   ; skip next if Z == 0
+001B   0A14           00056         GOTO    L_LOOP
+                      00057 
+                      00058     ; if (counter < duty) led_on else led_off
+                      00059 
+001C   0211           00060     MOVF  duty, W       ; W = duty
+001D   0090           00061     SUBWF counter, W    ; W = counter - duty
+                      00062 
+001E   0703           00063     BTFSS STATUS, C     ; C = 0 ? counter < duty
+001F   0A22           00064     GOTO    DO_ON
+                      00065 
+Warning[207]: Found label after column 1. (DO_OFF)
+0020                  00066         DO_OFF
+0020   0426           00067             BCF     GPIO, GP1
+0021   0A23           00068             GOTO    AFTER_SET
+                      00069         
+Warning[207]: Found label after column 1. (DO_ON)
+0022                  00070         DO_ON
+0022   0526           00071             BSF     GPIO, GP1
+                      00072 
+0023                  00073 AFTER_SET
+                      00074     ; counter++
+0023   02B0           00075     INCF    counter, F   ; wraps automatically, no extra logic needed
+                      00076 
+                      00077     ; delay ˜ “step time” (sets PWM freq)
+0024   0926           00078     CALL    DELAY
+                      00079 
+0025   0A19           00080     GOTO    K_LOOP
+                      00081 
+                      00082 ; ~some small delay (tune N for desired freq)
+0026                  00083 DELAY
+0026   0C0A           00084     MOVLW .10
+0027   0032           00085     MOVWF j
+0028                  00086 D_LOOP
+0028   02F2           00087     DECFSZ j, F
+0029   0A28           00088     GOTO D_LOOP
+002A   0800           00089     RETLW 0
+                      00090 
+                      00091     END
+MPASM  5.42                          MAIN.ASM   12-13-2025  3:40:06         PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+AFTER_SET                         00000023
+C                                 00000000
+CAL0                              00000001
+CAL1                              00000002
+CAL2                              00000003
+CAL3                              00000004
+CAL4                              00000005
+CAL5                              00000006
+CAL6                              00000007
+DC                                00000001
+DELAY                             00000026
+DO_OFF                            00000020
+DO_ON                             00000022
+DUTY_CHANGE_LOOP                  00000007
+DUTY_DOWN                         0000000F
+DUTY_OK                           00000012
+DUTY_UP                           00000009
+D_LOOP                            00000028
+F                                 00000001
+FOSC4                             00000000
+FSR                               00000004
+GP0                               00000000
+GP1                               00000001
+GP2                               00000002
+GP3                               00000003
+GPIO                              00000006
+GPWUF                             00000007
+INDF                              00000000
+INIT                              00000000
+K_LOOP                            00000019
+L_LOOP                            00000014
+NOT_GPPU                          00000006
+NOT_GPWU                          00000007
+NOT_PD                            00000003
+NOT_TO                            00000004
+OSCCAL                            00000005
+PCL                               00000002
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+STATUS                            00000003
+T0CS                              00000005
+T0SE                              00000004
+TMR0                              00000001
+TRISIO0                           00000000
+TRISIO1                           00000001
+TRISIO2                           00000002
+TRISIO3                           00000003
+W                                 00000000
+Z                                 00000002
+_CONFIG                           00000FFF
+_CP_OFF                           00000FFF
+MPASM  5.42                          MAIN.ASM   12-13-2025  3:40:06         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_CP_ON                            00000FF7
+_IDLOC0                           00000100
+_IDLOC1                           00000101
+_IDLOC2                           00000102
+_IDLOC3                           00000103
+_IntRC_OSC                        00000FFF
+_MCLRE_OFF                        00000FEF
+_MCLRE_ON                         00000FFF
+_WDT_OFF                          00000FFB
+_WDT_ON                           00000FFF
+__10F200                          00000001
+counter                           00000010
+direction                         00000015
+duty                              00000011
+j                                 00000012
+k                                 00000013
+l                                 00000014
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXX----- ----------------
+0FC0 : ---------------- ---------------- ---------------- ---------------X
+
+All other memory blocks unused.
+
+Program Memory Words Used:    43
+Program Memory Words Free:   213
+
+
+Errors   :     0
+Warnings :     2 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

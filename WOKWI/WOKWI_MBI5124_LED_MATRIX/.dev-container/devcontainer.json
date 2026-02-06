@@ -1,0 +1,11 @@
+{
+  "name": "Wokwi-chips clang + Platform IO",
+	"image": "wokwi-mbi5124-led-matrix-dev",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"Wokwi.wokwi-vscode"
+			]
+		}
+	}
+}

@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Robot Command Center</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body{font-family:system-ui,Arial;margin:20px}
+    .item-btns button{margin-left:6px}
+    .list-group-item .item-btns button{margin-left:6px}
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Robot Command Center</a>
+      <div class="d-flex">
+        <small class="text-muted">Local UI</small>
+        <a class="ms-3" href="/ui_v2">Open Clip Editor v2</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Eyes Sequence</h5>
+            <div id="eyes-list" class="list-group mb-2" style="max-height:260px;overflow:auto"></div>
+            <div class="mb-2">
+              <div id="eyes-buttons" class="btn-group flex-wrap" role="group" aria-label="eyes-actions">
+                <button class="btn btn-sm btn-outline-secondary eyes-quick" data-action="neutral">neutral</button>
+                <button class="btn btn-sm btn-outline-secondary eyes-quick" data-action="blink">blink</button>
+                <button class="btn btn-sm btn-outline-secondary eyes-quick" data-action="wink">wink</button>
+                <button class="btn btn-sm btn-outline-secondary eyes-quick" data-action="left">left</button>
+                <button class="btn btn-sm btn-outline-secondary eyes-quick" data-action="right">right</button>
+                <button class="btn btn-sm btn-outline-secondary eyes-quick" data-action="up">up</button>
+                <button class="btn btn-sm btn-outline-secondary eyes-quick" data-action="down">down</button>
+                <button class="btn btn-sm btn-outline-secondary eyes-quick" data-action="angry">angry</button>
+                <button class="btn btn-sm btn-outline-secondary eyes-quick" data-action="sad">sad</button>
+                <button class="btn btn-sm btn-outline-secondary eyes-quick" data-action="evil">evil</button>
+                <button class="btn btn-sm btn-outline-secondary eyes-quick" data-action="evil2">evil2</button>
+                <button class="btn btn-sm btn-outline-secondary eyes-quick" data-action="squint">squint</button>
+                <button class="btn btn-sm btn-outline-secondary eyes-quick" data-action="dead">dead</button>
+                <button class="btn btn-sm btn-outline-secondary eyes-quick" data-action="scan_ud">scan_ud</button>
+                <button class="btn btn-sm btn-outline-secondary eyes-quick" data-action="scan_lr">scan_lr</button>
+              </div>
+            </div>
+            <div class="input-group">
+              <input id="eyes-text" class="form-control" placeholder="Text to display (will be added as text:...)" />
+              <button id="eyes-text-add" class="btn btn-outline-primary">＋ Add Text</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Move Sequence</h5>
+            <div id="move-list" class="list-group mb-2" style="max-height:260px;overflow:auto"></div>
+            <div class="mb-2">
+              <div class="btn-group" role="group">
+                <button class="btn btn-sm btn-outline-secondary move-quick" data-dir="F">Forward</button>
+                <button class="btn btn-sm btn-outline-secondary move-quick" data-dir="B">Back</button>
+                <button class="btn btn-sm btn-outline-secondary move-quick" data-dir="L">Left</button>
+                <button class="btn btn-sm btn-outline-secondary move-quick" data-dir="R">Right</button>
+                <button class="btn btn-sm btn-outline-secondary move-quick" data-dir="S">Stop</button>
+              </div>
+            </div>
+            <div class="input-group">
+              <input id="move-amount" class="form-control" placeholder="Amount (ms, e.g. 1000)" value="1000" />
+              <button id="move-add" class="btn btn-outline-primary">＋ Add</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Audio Sequence</h5>
+            <div id="audio-list" class="list-group mb-2" style="max-height:260px;overflow:auto"></div>
+            <div class="mb-2">
+              <div class="d-flex gap-1 flex-wrap">
+                <select id="note-select" class="form-select form-select-sm" style="width:220px">
+                  <option value="C3">C3</option><option value="CS3">CS3</option><option value="D3">D3</option><option value="DS3">DS3</option><option value="E3">E3</option>
+                  <option value="F3">F3</option><option value="FS3">FS3</option><option value="G3">G3</option><option value="GS3">GS3</option><option value="A3">A3</option>
+                  <option value="AS3">AS3</option><option value="B3">B3</option>
+                  <option value="C4">C4</option><option value="CS4">CS4</option><option value="D4">D4</option><option value="DS4">DS4</option><option value="E4">E4</option>
+                  <option value="F4">F4</option><option value="FS4">FS4</option><option value="G4">G4</option><option value="GS4">GS4</option><option value="A4">A4</option>
+                  <option value="AS4">AS4</option><option value="B4">B4</option>
+                  <option value="C5">C5</option><option value="CS5">CS5</option><option value="D5">D5</option><option value="DS5">DS5</option><option value="E5">E5</option>
+                  <option value="F5">F5</option><option value="FS5">FS5</option><option value="G5">G5</option><option value="GS5">GS5</option><option value="A5">A5</option>
+                  <option value="AS5">AS5</option><option value="B5">B5</option>
+                  <option value="REST">REST</option>
+                </select>
+                <input id="note-duration" class="form-control form-control-sm" style="width:120px" placeholder="ms" value="1000" />
+                <button id="audio-add" class="btn btn-outline-primary btn-sm">＋ Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <div class="col-12">
+        <div class="d-flex gap-2">
+          <button id="build" class="btn btn-success">Build Grouped JSON (1 POST)</button>
+          <button id="add-group" class="btn btn-outline-primary">Add Inner Group</button>
+          <button id="copy" class="btn btn-secondary">Copy curl(s)</button>
+          <button id="send-server" class="btn btn-primary">Send to server</button>
+          <button id="download" class="btn btn-secondary">Download .txt</button>
+          <button id="save-server" class="btn btn-outline-primary">Append to personality.txt (server)</button>
+          <span id="status" class="align-self-center ms-2 text-success"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <div class="col-12">
+        <h6>Inner Groups (will run sequentially; items inside run in parallel)</h6>
+        <div id="groups-list" class="list-group mb-2" style="max-height:220px;overflow:auto"></div>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <div class="col-md-6">
+        <h6>Generated curl commands</h6>
+        <pre id="output" class="border rounded p-2" style="height:180px;overflow:auto;background:#f8f9fa"></pre>
+      </div>
+      <div class="col-md-6">
+        <h6>Incoming WebSocket</h6>
+        <pre id="wslog" class="border rounded p-2" style="height:180px;overflow:auto;background:#111;color:#0f0"></pre>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const ws = new WebSocket((location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + '/ws');
+    const wslog = document.getElementById('wslog');
+    ws.onmessage = e => { wslog.textContent = new Date().toISOString() + '  ' + e.data + '\n' + wslog.textContent }
+    ws.onopen = () => { wslog.textContent = 'WS connected\n' + wslog.textContent }
+    ws.onclose = () => { wslog.textContent = 'WS closed\n' + wslog.textContent }
+
+    function makeListItem(text) {
+      const el = document.createElement('div');
+      el.className = 'list-group-item d-flex justify-content-between align-items-center';
+      const spanText = document.createElement('span');
+      spanText.textContent = text;
+      const btns = document.createElement('span');
+      btns.className = 'item-btns';
+      btns.innerHTML = '<button class="btn btn-sm btn-light up">▲</button><button class="btn btn-sm btn-light down">▼</button><button class="btn btn-sm btn-danger del">✖</button>';
+      el.appendChild(spanText);
+      el.appendChild(btns);
+      btns.querySelector('.del').addEventListener('click', () => el.remove());
+      btns.querySelector('.up').addEventListener('click', () => { const p = el.previousElementSibling; if (p) p.before(el); });
+      btns.querySelector('.down').addEventListener('click', () => { const n = el.nextElementSibling; if (n) n.after(el); });
+      return el;
+    }
+
+    // Eyes (quick buttons and text input handled below)
+
+    // Quick eyes buttons
+    document.querySelectorAll('.eyes-quick').forEach(b => b.addEventListener('click', ()=>{
+      const action = b.dataset.action;
+      document.getElementById('eyes-list').appendChild(makeListItem(action));
+    }));
+
+    document.getElementById('eyes-text-add').addEventListener('click', ()=>{
+      const t = document.getElementById('eyes-text').value.trim();
+      if (!t) return;
+      document.getElementById('eyes-list').appendChild(makeListItem('text:' + t));
+      document.getElementById('eyes-text').value = '';
+    });
+
+    // Move (quick & manual)
+    document.getElementById('move-add').addEventListener('click', () => {
+      const amount = document.getElementById('move-amount').value.trim();
+      if (!amount) return;
+      document.getElementById('move-list').appendChild(makeListItem(amount));
+    });
+    document.querySelectorAll('.move-quick').forEach(b=>b.addEventListener('click', ()=>{
+      const dir = b.dataset.dir;
+      const amount = document.getElementById('move-amount').value.trim() || '25';
+      document.getElementById('move-list').appendChild(makeListItem(dir + amount));
+    }));
+
+    // Audio
+    document.getElementById('audio-add').addEventListener('click', () => {
+      const note = document.getElementById('note-select').value;
+      const dur = document.getElementById('note-duration').value.trim() || '500';
+      if (!note) return;
+      document.getElementById('audio-list').appendChild(makeListItem(note + ',' + dur));
+    });
+
+    function listToArray(containerId) {
+      return Array.from(document.getElementById(containerId).children).map(el => el.firstChild.textContent.trim());
+    }
+
+    // Groups: array of inner arrays (each inner array is list of command strings)
+    const groups = [];
+
+    function renderGroups() {
+      const container = document.getElementById('groups-list');
+      container.innerHTML = '';
+      groups.forEach((g, idx) => {
+        const el = document.createElement('div');
+        el.className = 'list-group-item d-flex justify-content-between align-items-center';
+        const spanText = document.createElement('span');
+        spanText.textContent = JSON.stringify(g);
+        const btns = document.createElement('span');
+        btns.className = 'item-btns';
+        btns.innerHTML = '<button class="btn btn-sm btn-light up">▲</button><button class="btn btn-sm btn-light down">▼</button><button class="btn btn-sm btn-danger del">✖</button>';
+        el.appendChild(spanText);
+        el.appendChild(btns);
+        btns.querySelector('.del').addEventListener('click', ()=>{ groups.splice(idx,1); renderGroups(); });
+        btns.querySelector('.up').addEventListener('click', ()=>{ if (idx>0) { const t = groups[idx-1]; groups[idx-1]=groups[idx]; groups[idx]=t; renderGroups(); } });
+        btns.querySelector('.down').addEventListener('click', ()=>{ if (idx<groups.length-1) { const t = groups[idx+1]; groups[idx+1]=groups[idx]; groups[idx]=t; renderGroups(); } });
+        container.appendChild(el);
+      });
+    }
+
+    function addInnerGroupFromCurrent() {
+      const eyes = listToArray('eyes-list');
+      const audio = listToArray('audio-list');
+      const move = listToArray('move-list');
+      // Build tokens: use semicolon-separated sequences for clarity and compatibility
+      const tokens = [];
+      if (eyes.length) tokens.push('eyes_seq:' + eyes.join(';'));
+      if (audio.length) tokens.push('audio:' + audio.join(';'));
+      if (move.length) {
+        // Convert user-facing ms values into device units (10 ms ticks)
+        const moveTokens = move.map(s => {
+          // Cases:
+          // 1) single-letter + number, e.g. F1000
+          // 2) plain number, e.g. 1000 (assume forward)
+          // 3) DIR,AMOUNT or DIR AMOUNT e.g. FWD,1000 or LEFT,1000
+          // 4) fallback - pass through
+          const m1 = s.match(/^([FBLRS])(\d+)$/);
+            if (m1) {
+              const dir = m1[1];
+              const amt = parseInt(m1[2],10);
+              const conv = Math.round(amt / 10);
+              return `move:${dir},${conv}`;
+            }
+          const m2 = s.match(/^(\d+)$/);
+          if (m2) {
+            const amt = parseInt(m2[1],10);
+            const conv = Math.round(amt / 10);
+            return `move:F,${conv}`;
+          }
+          const m3 = s.split(/[,\s]+/);
+          if (m3.length >= 2 && !isNaN(Number(m3[1]))) {
+            const dir = m3[0];
+            const amt = Number(m3[1]);
+            const conv = Math.round(amt / 10);
+            // keep single-letter direction tokens (F/B/L/R/S) as-is
+            const ndir = dir;
+            return `move:${ndir},${conv}`;
+          }
+          return `move:${s}`;
+        });
+        tokens.push(moveTokens.join(';'));
+      }
+      if (!tokens.length) return alert('Nothing in sequences to add as an inner group');
+      groups.push(tokens);
+      renderGroups();
+    }
+
+    function buildGroupedJson() {
+      const rawEyes = listToArray('eyes-list');
+      const rawAudio = listToArray('audio-list');
+      const rawMove = listToArray('move-list');
+
+      const eyes = rawEyes.map(s => s.startsWith('text:') ? s : `eyes_seq:${s}`);
+      const audio = rawAudio.map(s => `audio:${s}`);
+      const move = rawMove.map(s => {
+        // normalize move tokens to `move:DIR,AMOUNT` where DIR is a single letter
+        // and AMOUNT is in device units (10 ms ticks) when numeric durations are present.
+        // Case: single-letter + number e.g. F1000 -> keep letter, convert amount
+        if (/^[FBLRS]\d+$/.test(s)) {
+          const dir = s.charAt(0);
+          const amt = parseInt(s.slice(1), 10);
+          const conv = Math.round(amt / 10);
+          return `move:${dir},${conv}`;
+        }
+        // Case: plain number -> assume forward
+        if (/^\d+$/.test(s)) {
+          const conv = Math.round(parseInt(s,10) / 10);
+          return `move:F,${conv}`;
+        }
+        // Case: token like "FWD,100" or "LEFT,100" -> normalize to single-letter if possible
+        const parts = s.split(/[,\s]+/);
+        if (parts.length >= 2 && !isNaN(Number(parts[1]))) {
+          const rawDir = parts[0].toUpperCase();
+          const amt = Number(parts[1]);
+          const conv = Math.round(amt / 10);
+          const mapWords = {FWD:'F',BACK:'B',LEFT:'L',RIGHT:'R',STOP:'S',F:'F',B:'B',L:'L',R:'R',S:'S'};
+          const dir = (mapWords[rawDir] || rawDir);
+          return `move:${dir},${conv}`;
+        }
+        // fallback: pass through unchanged
+        return `move:${s}`;
+      });
+
+      const maxLen = Math.max(eyes.length, audio.length, move.length);
+      const groups = [];
+      for (let i=0;i<maxLen;i++) {
+        const g = [];
+        if (i < eyes.length) g.push(eyes[i]);
+        if (i < audio.length) g.push(audio[i]);
+        if (i < move.length) g.push(move[i]);
+        if (g.length) groups.push(g);
+      }
+      return groups;
+    }
+
+    document.getElementById('build').addEventListener('click', () => {
+      let grouped = [];
+      if (groups.length) {
+        grouped = groups;
+      } else {
+        grouped = buildGroupedJson();
+      }
+      const json = JSON.stringify(grouped);
+      const curl = `curl -X POST "http://${location.hostname}:8765/commands?cmd=` + encodeURIComponent(json) + `"`;
+      document.getElementById('output').textContent = curl;
+    });
+
+    document.getElementById('copy').addEventListener('click', async () => {
+      const txt = document.getElementById('output').textContent;
+      if (!txt) return;
+      await navigator.clipboard.writeText(txt);
+      document.getElementById('status').textContent = 'Copied';
+      setTimeout(()=>document.getElementById('status').textContent='',1200);
+    });
+
+    document.getElementById('download').addEventListener('click', () => {
+      const txt = document.getElementById('output').textContent || '';
+      const blob = new Blob([txt], {type:'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'micropersonality.txt'; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    document.getElementById('save-server').addEventListener('click', async ()=>{
+      const txt = document.getElementById('output').textContent;
+      if (!txt) return alert('Build first');
+      const form = new FormData(); form.append('line', txt.trim());
+      await fetch('/save_snippet', { method: 'POST', body: form });
+      document.getElementById('status').textContent = 'Saved to server';
+      setTimeout(()=>document.getElementById('status').textContent='',1400);
+    });
+
+    document.getElementById('add-group').addEventListener('click', ()=>{
+      addInnerGroupFromCurrent();
+    });
+
+    // Send built commands to server (/commands) sequentially
+    document.getElementById('send-server').addEventListener('click', async ()=>{
+      const grouped = (groups.length ? groups : buildGroupedJson());
+      if (!grouped.length) return alert('Nothing to send — build sequences first');
+
+      const json = JSON.stringify(grouped);
+      const url = '/commands?cmd=' + encodeURIComponent(json);
+      const status = document.getElementById('status');
+      status.textContent = 'Sending...';
+      document.getElementById('send-server').disabled = true;
+      try {
+        const res = await fetch(url, { method: 'POST' });
+        wslog.textContent = `grouped -> ${json} => ${res.status}` + '\n' + wslog.textContent;
+        status.textContent = 'Sent';
+      } catch (err) {
+        status.textContent = 'Error sending: ' + err;
+      } finally {
+        document.getElementById('send-server').disabled = false;
+        setTimeout(()=>status.textContent='',1400);
+      }
+    });
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

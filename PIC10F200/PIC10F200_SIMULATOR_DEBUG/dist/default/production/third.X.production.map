@@ -1,0 +1,132 @@
+Microchip MPLAB XC8 Compiler V3.10
+
+Linker command line:
+
+-W-3 --edf=D:\arduino\microchip\pic\dat\20250813170317_en.msgs -cn \
+  -h+dist/default/production\third.X.production.sym \
+  --cmf=dist/default/production\third.X.production.cmf -z -Q10F200 \
+  -oC:\Users\ALEXAN~1\AppData\Local\Temp\xcAsisw.0\driver_tmp_3.o \
+  --defsym=__MPLAB_BUILD=1 --fixupoverflow=error \
+  -Mdist/default/production/third.X.production.map -E1 -ver=XC8 Compiler \
+  -ACODE=00h-0FEh -ASTRCODE=00h-0FEh -ASTRING=00h-0FEh \
+  -AENTRY=00h-0FFh-0FEh -ABANK0=010h-01Dh -ARAM=010h-01Dh -AABS1=010h-01Fh \
+  -ACOMMON=01Ch-01Fh -ASFR0=00h-0Fh -ACONFIG=0FFFh-0FFFh -DCONFIG=2 \
+  -AIDLOC=0100h-0103h -DIDLOC=2 -DCODE=2 -DSTRCODE=2 -DSTRING=2 -DCONST=2 \
+  -DENTRY=2 -preset_vec=0ffh,reset_wrap=00h,init,end_init,cinit,clrtext \
+  -ppowerup=CODE -pfunctab=ENTRY -pstrings=-STRING -k \
+  C:\Users\ALEXAN~1\AppData\Local\Temp\xcAsisw.0\driver_tmp_6.o \
+  build/default/production/newpic_8b_asm_func.o 
+
+Object code version is 3.11
+
+Machine type is 10F200
+
+
+
+                Name                               Link     Load   Length Selector   Space Scale
+C:\Users\ALEXAN~1\AppData\Local\Temp\xcAsisw.0\driver_tmp_6.o
+                end_init                              0        0        1        0       0
+                reset_vec                            FF       FF        1      1FE       0
+                config                              FFF      FFF        1        0       4
+build/default/production/newpic_8b_asm_func.o
+                config                              FFF      FFF        1        0       4
+                resetVec                              E        E        1        2       0
+                code                                  1        1        D        2       0
+
+TOTAL           Name                               Link     Load   Length     Space
+        CLASS   CODE           
+                reset_vec                            FF       FF        1         0
+                resetVec                              E        E        1         0
+                code                                  1        1        D         0
+
+        CLASS   STRCODE        
+
+        CLASS   STRING         
+
+        CLASS   ENTRY          
+                end_init                              0        0        1         0
+
+        CLASS   BANK0          
+
+        CLASS   RAM            
+
+        CLASS   ABS1           
+
+        CLASS   COMMON         
+
+        CLASS   SFR0           
+
+        CLASS   CONFIG         
+                config                              FFF      FFF        1         4
+
+        CLASS   IDLOC          
+
+        CLASS   CONST          
+
+        CLASS   HEAP           
+
+        CLASS   STACK          
+
+
+
+SEGMENTS        Name                           Load    Length   Top    Selector   Space  Class     Delta
+
+                reset_wrap                     000000  000001  000001         0       0  ENTRY       2
+                code                           000001  00000E  00000F         2       0  CODE        2
+                reset_vec                      0000FF  000001  000100       1FE       0  CODE        2
+
+
+UNUSED ADDRESS RANGES
+
+        Name                Unused          Largest block    Delta
+        BANK0            0010-001D              E           1
+        CODE             000F-00FE             F0           2
+        COMMON           001C-001F              4           1
+        ENTRY            000F-00FE             F0           2
+        IDLOC            0100-0103              4           2
+        RAM              0010-001D              E           1
+        SFR0             0000-000F             10           1
+        STRCODE          000F-00FE             F0           2
+        STRING           000F-00FE             F0           2
+
+                                  Symbol Table
+
+__H__absolute__      __absolute__ 0000  __Habs1              abs1         0000
+__Hbank0             bank0        0000  __Hcinit             cinit        0001
+__Hclrtext           clrtext      0001  __Hcode              code         0000
+__Hcommon            common       0000  __Hconfig            config       1000
+__Hdata              data         0000  __Hend_init          end_init     0001
+__Hfunctab           functab      0000  __Hheap              heap         0000
+__Hinit              init         0000  __Hjmp_tab           jmp_tab      0000
+__Hmaintext          maintext     0000  __Hpowerup           powerup      0000
+__Hram               ram          0000  __HresetVec          resetVec     0000
+__Hreset_vec         reset_vec    0100  __Hreset_wrap        reset_wrap   0000
+__Hsfr0              sfr0         0000  __Hspace_0           (abs)        0100
+__Hspace_1           (abs)        0000  __Hspace_2           (abs)        0000
+__Hspace_4           (abs)        1FFF  __Hstack             stack        0000
+__Hstrings           strings      0000  __Htext              text         0000
+__Hudata             udata        0000  __Hudata_bank0       udata_bank0  0000
+__L__absolute__      __absolute__ 0000  __Labs1              abs1         0000
+__Lbank0             bank0        0000  __Lcinit             cinit        0001
+__Lclrtext           clrtext      0001  __Lcode              code         0000
+__Lcommon            common       0000  __Lconfig            config       0000
+__Ldata              data         0000  __Lend_init          end_init     0000
+__Lfunctab           functab      0000  __Lheap              heap         0000
+__Linit              init         0000  __Ljmp_tab           jmp_tab      0000
+__Lmaintext          maintext     0000  __Lpowerup           powerup      0000
+__Lram               ram          0000  __LresetVec          resetVec     0000
+__Lreset_vec         reset_vec    00FF  __Lreset_wrap        reset_wrap   0000
+__Lsfr0              sfr0         0000  __Lspace_0           (abs)        0000
+__Lspace_1           (abs)        0000  __Lspace_2           (abs)        0000
+__Lspace_4           (abs)        0000  __Lstack             stack        0000
+__Lstrings           strings      0000  __Ltext              text         0000
+__Ludata             udata        0000  __Ludata_bank0       udata_bank0  0000
+__S0                 (abs)        000F  __S1                 (abs)        0000
+___heap_hi           (abs)        0000  ___heap_lo           (abs)        0000
+___int_sp            stack        0000  ___int_stack_hi      stack        0000
+___int_stack_lo      stack        0000  ___sp                stack        0000
+___stack_hi          stack        0000  ___stack_lo          stack        0000
+___stackhi           (abs)        0000  ___stacklo           (abs)        0000
+_main                code         0002  reset_vec            reset_vec    00FF
+reset_wrap           reset_wrap   0000  start                init         0000
+start_initialization code         0001  

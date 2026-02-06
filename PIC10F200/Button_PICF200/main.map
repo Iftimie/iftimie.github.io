@@ -1,0 +1,50 @@
+MPLINK 4.40, Linker
+Linker Map File - Created Sat Dec 13 04:47:00 2025
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x00004e
+      .config_0FFF_MAIN.O       code   0x000fff    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x000026      
+                            0x000fff    0x000fff      
+            40 out of 261 program addresses used, program memory utilization is 15%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+              BLINK_DELAY   0x00001e    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\Button_PICF200\main.asm
+                       D1   0x00001b    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\Button_PICF200\main.asm
+                 DEBOUNCE   0x000019    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\Button_PICF200\main.asm
+                     INIT   0x000000    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\Button_PICF200\main.asm
+                    INNER   0x000022    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\Button_PICF200\main.asm
+                     MAIN   0x000006    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\Button_PICF200\main.asm
+                    OUTER   0x000020    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\Button_PICF200\main.asm
+                 RUN_MODE   0x000012    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\Button_PICF200\main.asm
+             WAIT_RELEASE   0x00000b    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\Button_PICF200\main.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     INIT   0x000000    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\Button_PICF200\main.asm
+                     MAIN   0x000006    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\Button_PICF200\main.asm
+             WAIT_RELEASE   0x00000b    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\Button_PICF200\main.asm
+                 RUN_MODE   0x000012    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\Button_PICF200\main.asm
+                 DEBOUNCE   0x000019    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\Button_PICF200\main.asm
+                       D1   0x00001b    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\Button_PICF200\main.asm
+              BLINK_DELAY   0x00001e    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\Button_PICF200\main.asm
+                    OUTER   0x000020    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\Button_PICF200\main.asm
+                    INNER   0x000022    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\Button_PICF200\main.asm
+
+

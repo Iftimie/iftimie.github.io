@@ -1,0 +1,190 @@
+MPASM  5.42                          MAIN.ASM   12-13-2025  4:46:59         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001 #include "p10f200.inc"
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC10F200 processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2011 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+                      00148         LIST
+0FFF   0FEB           00002     __CONFIG _WDT_OFF & _CP_OFF & _MCLRE_OFF
+                      00003 
+  00000010            00004 state EQU 0x10     ; 0 = OFF, 1 = BLINK
+  00000011            00005 i     EQU 0x11     ; delay
+  00000012            00006 j EQU 0x12   ; add this near your EQUs
+                      00007 
+0000                  00008     ORG 0x0000
+                      00009 
+0000                  00010 INIT
+                      00011     ; enable pull-ups
+0000   0C9F           00012     MOVLW ~((1<<T0CS)|(1<<NOT_GPPU))
+0001   0002           00013     OPTION
+                      00014 
+                      00015     ; GP1 = output (LED), GP3 = input (button)
+0002   0CF5           00016     MOVLW ~((1<<GP3)|(1<<GP1))
+0003   0006           00017     TRIS GPIO
+                      00018 
+0004   0070           00019     CLRF state
+0005   0426           00020     BCF GPIO, GP1
+                      00021 
+0006                  00022 MAIN
+                      00023     ; ---- button check ----
+0006   0666           00024     BTFSC GPIO, GP3      ; not pressed?
+0007   0A12           00025     GOTO RUN_MODE
+                      00026 
+0008   0919           00027     CALL DEBOUNCE
+0009   0666           00028     BTFSC GPIO, GP3
+000A   0A12           00029     GOTO RUN_MODE
+                      00030 
+000B                  00031 WAIT_RELEASE
+000B   0766           00032     BTFSS GPIO, GP3
+000C   0A0B           00033     GOTO WAIT_RELEASE
+000D   0919           00034     CALL DEBOUNCE
+                      00035 
+000E   02B0           00036     INCF state, F        ; toggle state
+000F   0610           00037     BTFSC state, 0
+0010   0A12           00038     GOTO RUN_MODE
+0011   0426           00039     BCF GPIO, GP1        ; ensure OFF
+                      00040 
+0012                  00041 RUN_MODE
+0012   0710           00042     BTFSS state, 0       ; state == 0 ?
+0013   0A06           00043     GOTO MAIN            ; OFF mode
+                      00044 
+MPASM  5.42                          MAIN.ASM   12-13-2025  4:46:59         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00045     ; ---- BLINK MODE ----
+0014   0526           00046     BSF GPIO, GP1
+0015   091E           00047     CALL BLINK_DELAY
+0016   0426           00048     BCF GPIO, GP1
+0017   091E           00049     CALL BLINK_DELAY
+0018   0A06           00050     GOTO MAIN
+                      00051 
+                      00052 ; ------------------------
+                      00053 
+0019                  00054 DEBOUNCE
+0019   0C28           00055     MOVLW D'40'
+001A   0031           00056     MOVWF i
+001B                  00057 D1
+001B   02F1           00058     DECFSZ i, F
+001C   0A1B           00059     GOTO D1
+001D   0800           00060     RETLW 0
+                      00061 
+001E                  00062 BLINK_DELAY
+001E   0CFA           00063     MOVLW D'250'
+001F   0032           00064     MOVWF j
+0020                  00065 OUTER
+0020   0CFA           00066     MOVLW D'250'
+0021   0031           00067     MOVWF i
+0022                  00068 INNER
+0022   02F1           00069     DECFSZ i, F
+0023   0A22           00070     GOTO INNER
+0024   02F2           00071     DECFSZ j, F
+0025   0A20           00072     GOTO OUTER
+0026   0800           00073     RETLW 0
+                      00074 
+                      00075     END
+MPASM  5.42                          MAIN.ASM   12-13-2025  4:46:59         PAGE  3
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+BLINK_DELAY                       0000001E
+C                                 00000000
+CAL0                              00000001
+CAL1                              00000002
+CAL2                              00000003
+CAL3                              00000004
+CAL4                              00000005
+CAL5                              00000006
+CAL6                              00000007
+D1                                0000001B
+DC                                00000001
+DEBOUNCE                          00000019
+F                                 00000001
+FOSC4                             00000000
+FSR                               00000004
+GP0                               00000000
+GP1                               00000001
+GP2                               00000002
+GP3                               00000003
+GPIO                              00000006
+GPWUF                             00000007
+INDF                              00000000
+INIT                              00000000
+INNER                             00000022
+MAIN                              00000006
+NOT_GPPU                          00000006
+NOT_GPWU                          00000007
+NOT_PD                            00000003
+NOT_TO                            00000004
+OSCCAL                            00000005
+OUTER                             00000020
+PCL                               00000002
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+RUN_MODE                          00000012
+STATUS                            00000003
+T0CS                              00000005
+T0SE                              00000004
+TMR0                              00000001
+TRISIO0                           00000000
+TRISIO1                           00000001
+TRISIO2                           00000002
+TRISIO3                           00000003
+W                                 00000000
+WAIT_RELEASE                      0000000B
+Z                                 00000002
+_CONFIG                           00000FFF
+_CP_OFF                           00000FFF
+_CP_ON                            00000FF7
+_IDLOC0                           00000100
+_IDLOC1                           00000101
+MPASM  5.42                          MAIN.ASM   12-13-2025  4:46:59         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_IDLOC2                           00000102
+_IDLOC3                           00000103
+_IntRC_OSC                        00000FFF
+_MCLRE_OFF                        00000FEF
+_MCLRE_ON                         00000FFF
+_WDT_OFF                          00000FFB
+_WDT_ON                           00000FFF
+__10F200                          00000001
+i                                 00000011
+j                                 00000012
+state                             00000010
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXX--------- ----------------
+0FC0 : ---------------- ---------------- ---------------- ---------------X
+
+All other memory blocks unused.
+
+Program Memory Words Used:    39
+Program Memory Words Free:   217
+
+
+Errors   :     0
+Warnings :     0 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

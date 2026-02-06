@@ -1,0 +1,51 @@
+
+
+
+
+
+
+
+
+
+
+#Curious Peek
+
+
+#Happy Wiggle
+
+
+#Suspicious Scan
+
+
+#Angry Shiver
+
+
+#Sleepy Nod
+curl -X POST "http://127.0.0.1:8765/commands?cmd=up"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=audio:659,120;0,40;659,120;0,40;659,120;0,120;523,120;659,120"
+curl -X POST "http://127.0.0.1:8765/commands?cmd=angry"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=audio:880,1200;440,500;350,1000"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=eyes:angry"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=audio:A4,400;C5,500;A5,300;B4,400"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=audio:E5,700;REST,200;G5,700"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=audio:G5,600;REST,200;C5,900"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=audio:A4,700;REST,150;A4,700;A4,700;REST,150;A4,700;A4,700;REST,150;A4,700"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=audio:C5,700;REST,200;E5,900"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=audio:G5,1000"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=move:F50L100F50;"
+curl -X POST 'http://192.168.1.177:8765/commands?cmd=eyes_seq:up;blink;left;right;up;text:Whats_up_doc?;blink;neutral'
+curl -X POST "http://192.168.1.177:8765/commands?cmd=audio:A4,800;REST,500;C5,800;REST,500;E5,1400"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=move:F100L100R100F100" 
+curl -X POST "http://192.168.1.177:8765/commands?cmd=eyes_seq:blink;wink;neutral;blink"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=audio:C5,600;E5,600;FS5,700;REST,300"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=move:L12R12L12R12;L12R12L12R12;"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=eyes_seq:scan_lr;left;text:I_sense_danger;right;scan_lr"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=audio:FS5,800;REST,300;E5,800;REST,300"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=move:F10S10F10S10;F10S10F10S10;F10S10F10S10;"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=eyes_seq:angry;text:WTF_bro?;left;angry;right;angry"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=audio:A4,900;REST,500;A4,900;REST,500;C5,1200"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=move:F25B20F25;F25B20F25;F25B20F25;"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=eyes_seq:sad;text:Me_sad;down;sad"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=audio:E5,1000;REST,500;C5,1000;REST,500;E5,1000"
+curl -X POST "http://192.168.1.177:8765/commands?cmd=move:B25S25;B25S25;B25S25;B25S25;"
+

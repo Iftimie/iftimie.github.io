@@ -1,0 +1,56 @@
+MPLINK 4.40, Linker
+Linker Map File - Created Sat Dec 13 03:40:06 2025
+
+                                 Section Info
+                  Section       Type    Address   Location Size(Bytes)
+                ---------  ---------  ---------  ---------  ---------
+                   .org_0       code   0x000000    program   0x000000
+                   .org_1       code   0x000000    program   0x000056
+      .config_0FFF_MAIN.O       code   0x000fff    program   0x000002
+
+
+
+                              Program Memory Usage 
+                               Start         End      
+                           ---------   ---------      
+                            0x000000    0x00002a      
+                            0x000fff    0x000fff      
+            44 out of 261 program addresses used, program memory utilization is 16%
+
+
+
+                              Symbols - Sorted by Name
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                AFTER_SET   0x000023    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                    DELAY   0x000026    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                   DO_OFF   0x000020    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                    DO_ON   0x000022    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+         DUTY_CHANGE_LOOP   0x000007    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                DUTY_DOWN   0x00000f    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                  DUTY_OK   0x000012    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                  DUTY_UP   0x000009    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                   D_LOOP   0x000028    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                     INIT   0x000000    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                   K_LOOP   0x000019    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                   L_LOOP   0x000014    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+
+
+
+                              Symbols - Sorted by Address
+                     Name    Address   Location    Storage File                     
+                ---------  ---------  ---------  --------- ---------                
+                     INIT   0x000000    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+         DUTY_CHANGE_LOOP   0x000007    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                  DUTY_UP   0x000009    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                DUTY_DOWN   0x00000f    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                  DUTY_OK   0x000012    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                   L_LOOP   0x000014    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                   K_LOOP   0x000019    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                   DO_OFF   0x000020    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                    DO_ON   0x000022    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                AFTER_SET   0x000023    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                    DELAY   0x000026    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+                   D_LOOP   0x000028    program     static C:\Users\Alexandru\Desktop\SabbaticalProjects\Electronics\PWM_PICF200\main.asm
+
+

@@ -1,0 +1,193 @@
+(function () {
+  try {
+    if (typeof api !== "function") {
+      alert("api() not available");
+      return;
+    }
+
+    const src = api("getSource", { type: "json" });
+
+    // ----------------------------
+    // Find "origin" from board outline (heuristic)
+    // ----------------------------
+    function pickLikelyOutlineTrack(source) {
+      const tracks = source.TRACK || {};
+      const keys = Object.keys(tracks);
+      if (!keys.length) return null;
+
+      const layerScore = new Map();
+      for (const k of keys) {
+        const t = tracks[k];
+        if (!t || t.layerid == null) continue;
+
+        const net = (t.net ?? t.netname ?? "");
+        let score = 0;
+        if (!net) score += 2;
+        if (Array.isArray(t.pointArr) && t.pointArr.length >= 2) score += 2;
+
+        const lid = String(t.layerid);
+        layerScore.set(lid, (layerScore.get(lid) || 0) + score);
+      }
+
+      let bestLayer = null, bestScore = -Infinity;
+      for (const [lid, sc] of layerScore.entries()) {
+        if (sc > bestScore) { bestScore = sc; bestLayer = lid; }
+      }
+      if (!bestLayer) return null;
+
+      for (const k of keys) {
+        const t = tracks[k];
+        if (t && String(t.layerid) === bestLayer && Array.isArray(t.pointArr) && t.pointArr.length) {
+          return t;
+        }
+      }
+      return null;
+    }
+
+    function firstPointFromObj(o) {
+      if (o && Array.isArray(o.pointArr) && o.pointArr.length > 0) {
+        const pt = o.pointArr[0];
+        if (pt && typeof pt.x === "number" && typeof pt.y === "number") {
+          return { x: pt.x, y: pt.y };
+        }
+      }
+      return null;
+    }
+
+    const outlineTrack = pickLikelyOutlineTrack(src);
+    if (!outlineTrack) {
+      alert("Couldn't find outline candidate. Draw/ensure board outline exists.");
+      return;
+    }
+
+    const origin = firstPointFromObj(outlineTrack);
+    if (!origin) {
+      alert("Couldn't extract outline first point.");
+      return;
+    }
+
+    // Place flower near origin (offset so it doesn't sit on the outline)
+    const baseX = origin.x + 600;
+    const baseY = origin.y + 600;
+
+    // ----------------------------
+    // Flower parameters (tweak these)
+    // ----------------------------
+    const petals = 8;          // number of petals
+    const petalLen = 700;      // length of a petal (internal units)
+    const petalWidth = 260;    // "bulge" of petal (internal units)
+    const segments = 24;       // curve resolution: higher = smoother, more tracks/points
+    const strokeWidth = 12;    // track width (internal units)
+    const layerid = "1";       // ✅ TOP COPPER
+
+    // ----------------------------
+    // Math helpers
+    // ----------------------------
+    function rot(x, y, ang) {
+      const c = Math.cos(ang), s = Math.sin(ang);
+      return { x: x * c - y * s, y: x * s + y * c };
+    }
+
+    // Cubic Bezier point
+    function bezier(p0, p1, p2, p3, t) {
+      const u = 1 - t;
+      const tt = t * t, uu = u * u;
+      const uuu = uu * u, ttt = tt * t;
+      return {
+        x: uuu * p0.x + 3 * uu * t * p1.x + 3 * u * tt * p2.x + ttt * p3.x,
+        y: uuu * p0.y + 3 * uu * t * p1.y + 3 * u * tt * p2.y + ttt * p3.y
+      };
+    }
+
+    // Build one petal as a closed-ish loop (two bezier sides meeting at the tip)
+    // We'll just draw the outline (two curves) as one polyline: base -> tip -> base
+    function makePetalPolyline(len, width, segs) {
+      // Petal in local coordinates:
+      // base at (0,0), tip at (len,0)
+      const p0 = { x: 0,   y: 0 };
+      const p3 = { x: len, y: 0 };
+
+      // Upper control points (bulge up)
+      const p1u = { x: len * 0.35, y:  width };
+      const p2u = { x: len * 0.70, y:  width * 0.40 };
+
+      // Lower control points (bulge down)
+      const p1d = { x: len * 0.35, y: -width };
+      const p2d = { x: len * 0.70, y: -width * 0.40 };
+
+      const pts = [];
+
+      // Upper curve: base -> tip
+      for (let i = 0; i <= segs; i++) {
+        const t = i / segs;
+        pts.push(bezier(p0, p1u, p2u, p3, t));
+      }
+      // Lower curve: tip -> base
+      for (let i = 0; i <= segs; i++) {
+        const t = i / segs;
+        const pt = bezier(p3, p2d, p1d, p0, t);
+        pts.push(pt);
+      }
+
+      return pts;
+    }
+
+    // Convert local points to world points with rotation and translation
+    function transformPolyline(pts, ang, tx, ty) {
+      return pts.map(pt => {
+        const r = rot(pt.x, pt.y, ang);
+        return { x: r.x + tx, y: r.y + ty };
+      });
+    }
+
+    // Create a PCB TRACK from a point array
+    function createTrack(pointArr) {
+      const gId = "gge" + Date.now() + "_" + Math.floor(Math.random() * 1e6);
+      api("createShape", {
+        shapeType: "TRACK",
+        jsonCache: {
+          gId,
+          layerid,
+          strokeWidth,
+          net: "",
+          pointArr
+        }
+      });
+      return gId;
+    }
+
+    // ----------------------------
+    // Draw the flower (petals)
+    // ----------------------------
+    const petalLocal = makePetalPolyline(petalLen, petalWidth, segments);
+    const created = [];
+
+    for (let i = 0; i < petals; i++) {
+      const ang = (i * 2 * Math.PI) / petals;
+      const poly = transformPolyline(petalLocal, ang, baseX, baseY);
+      created.push(createTrack(poly));
+    }
+
+    // Optional: add a small "center" circle-ish as a polygon track
+    // (simple 16-gon)
+    const centerR = 120;
+    const centerPts = [];
+    const N = 16;
+    for (let i = 0; i <= N; i++) {
+      const a = (i * 2 * Math.PI) / N;
+      centerPts.push({ x: baseX + centerR * Math.cos(a), y: baseY + centerR * Math.sin(a) });
+    }
+    created.push(createTrack(centerPts));
+
+    alert(
+      "🌸 Flower drawn on TOP layer\n\n" +
+      "Origin: (" + origin.x + ", " + origin.y + ")\n" +
+      "Flower center: (" + baseX + ", " + baseY + ")\n" +
+      "Tracks created: " + created.length + "\n\n" +
+      "Tip: if it's off-screen, press K (Fit)."
+    );
+
+  } catch (e) {
+    alert("Error: " + (e.message || e));
+  }
+})();

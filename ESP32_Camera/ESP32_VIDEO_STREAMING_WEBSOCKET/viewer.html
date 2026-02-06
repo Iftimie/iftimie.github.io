@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <body>
+    <h3>ESP32 WS stream</h3>
+    <img id="img" style="max-width: 100%; border: 1px solid #ccc;" />
+    <script>
+      const token = "change-me";
+      const ws = new WebSocket(`ws://128.140.71.111:80/ws/view`);
+      ws.binaryType = "arraybuffer";
+
+      const img = document.getElementById("img");
+
+      ws.onmessage = (ev) => {
+        const bytes = new Uint8Array(ev.data);
+        const blob = new Blob([bytes], { type: "image/jpeg" });
+        const url = URL.createObjectURL(blob);
+        img.src = url;
+        // optional: revoke older URLs after load to avoid leaking
+        img.onload = () => URL.revokeObjectURL(url);
+      };
+    </script>
+  </body>
+</html>

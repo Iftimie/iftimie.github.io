@@ -1,0 +1,227 @@
+MPASM  5.42                          MAIN.ASM   12-17-2025  17:32:05         PAGE  1
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+                      00001         LIST    P=10F200
+                      00002         #include "p10f200.inc"
+                      00001         LIST
+                      00002 
+                      00003 ;==========================================================================
+                      00004 ;  MPASM PIC10F200 processor include
+                      00005 ; 
+                      00006 ;  (c) Copyright 1999-2011 Microchip Technology, All rights reserved
+                      00007 ;==========================================================================
+                      00008 
+                      00148         LIST
+0FFF   0FEB           00003         __CONFIG _WDT_OFF & _CP_OFF & _MCLRE_OFF
+                      00004 
+                      00005 ; ----------------------------
+                      00006 ; Pin usage:
+                      00007 ; GP0 = IN1
+                      00008 ; GP1 = IN2
+                      00009 ; GP2 = EN1
+                      00010 ;
+                      00011 ; L293D direction (EN=1):
+                      00012 ; IN1=1 IN2=0  -> OUT1 high, OUT2 low
+                      00013 ; IN1=0 IN2=1  -> OUT1 low,  OUT2 high
+                      00014 ; ----------------------------
+                      00015 
+                      00016 ; RAM (file registers)
+  00000010            00017 d1      EQU     0x10
+  00000011            00018 d2      EQU     0x11
+                      00019 
+0000                  00020         ORG     0x0000
+                      00021 
+0000                  00022 INIT:
+                      00023         ; Make GP2 a normal GPIO (disable T0CKI function)
+0000   0CDF           00024         MOVLW   ~(1<<T0CS)
+0001   0002           00025         OPTION
+                      00026 
+                      00027         ; Set GP0, GP1, GP2 as outputs (TRIS bit = 0 => output)
+0002   0040           00028         CLRW
+0003   0006           00029         TRIS    GPIO
+                      00030 
+                      00031         ; Start in a known safe state: EN=0, IN1=0, IN2=0
+0004   0066           00032         CLRF    GPIO
+                      00033 
+0005                  00034 MAIN:
+                      00035         ; -------- Polarity A: IN1=1, IN2=0 --------
+                      00036         ; dead-time off first
+0005   0446           00037         BCF     GPIO, GP2        ; EN=0
+0006   0912           00038         CALL    DEADTIME_20US
+                      00039 
+                      00040         ; set direction
+0007   0506           00041         BSF     GPIO, GP0        ; IN1=1
+0008   0426           00042         BCF     GPIO, GP1        ; IN2=0
+                      00043 
+                      00044         ; enable
+MPASM  5.42                          MAIN.ASM   12-17-2025  17:32:05         PAGE  2
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0009   0546           00045         BSF     GPIO, GP2        ; EN=1
+000A   0927           00046         CALL    DELAY_2P5MS
+                      00047 
+                      00048         ; -------- Polarity B: IN1=0, IN2=1 --------
+000B   0446           00049         BCF     GPIO, GP2        ; EN=0
+000C   0912           00050         CALL    DEADTIME_20US
+                      00051 
+000D   0406           00052         BCF     GPIO, GP0        ; IN1=0
+000E   0526           00053         BSF     GPIO, GP1        ; IN2=1
+                      00054 
+000F   0546           00055         BSF     GPIO, GP2        ; EN=1
+0010   0927           00056         CALL    DELAY_2P5MS
+                      00057 
+0011   0A05           00058         GOTO    MAIN
+                      00059 
+                      00060 
+                      00061 ; ----------------------------
+                      00062 ; Dead-time ~20 us @ 4 MHz (1 us per instruction cycle-ish)
+                      00063 ; This is just to avoid nasty switching overlap.
+                      00064 ; ----------------------------
+0012                  00065 DEADTIME_20US:
+                      00066         ; 20 NOPs ~= 20 us
+0012   0000           00067         NOP
+0013   0000           00068         NOP
+0014   0000           00069         NOP
+0015   0000           00070         NOP
+0016   0000           00071         NOP
+0017   0000           00072         NOP
+0018   0000           00073         NOP
+0019   0000           00074         NOP
+001A   0000           00075         NOP
+001B   0000           00076         NOP
+001C   0000           00077         NOP
+001D   0000           00078         NOP
+001E   0000           00079         NOP
+001F   0000           00080         NOP
+0020   0000           00081         NOP
+0021   0000           00082         NOP
+0022   0000           00083         NOP
+0023   0000           00084         NOP
+0024   0000           00085         NOP
+0025   0000           00086         NOP
+Warning[227]: Substituting RETLW 0 for RETURN pseudo-op
+0026   0800           00087         RETURN
+                      00088 
+                      00089 
+                      00090 ; ----------------------------
+                      00091 ; Delay ~2.5 ms @ 4 MHz
+                      00092 ; Two nested loops.
+                      00093 ; Adjust constants to tweak frequency.
+                      00094 ; ----------------------------
+0027                  00095 DELAY_2P5MS:
+0027   0C0A           00096         MOVLW   .10        ; outer loop count
+MPASM  5.42                          MAIN.ASM   12-17-2025  17:32:05         PAGE  3
+
+
+LOC  OBJECT CODE     LINE SOURCE TEXT
+  VALUE
+
+0028   0030           00097         MOVWF   d1
+0029                  00098 D2P5_O:
+0029   0C0A           00099         MOVLW   .10        ; inner loop count
+002A   0031           00100         MOVWF   d2
+002B                  00101 D2P5_I:
+002B   02F1           00102         DECFSZ  d2, F
+002C   0A2B           00103         GOTO    D2P5_I
+002D   02F0           00104         DECFSZ  d1, F
+002E   0A29           00105         GOTO    D2P5_O
+Warning[227]: Substituting RETLW 0 for RETURN pseudo-op
+002F   0800           00106         RETURN
+                      00107 
+                      00108         END
+MPASM  5.42                          MAIN.ASM   12-17-2025  17:32:05         PAGE  4
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+C                                 00000000
+CAL0                              00000001
+CAL1                              00000002
+CAL2                              00000003
+CAL3                              00000004
+CAL4                              00000005
+CAL5                              00000006
+CAL6                              00000007
+D2P5_I                            0000002B
+D2P5_O                            00000029
+DC                                00000001
+DEADTIME_20US                     00000012
+DELAY_2P5MS                       00000027
+F                                 00000001
+FOSC4                             00000000
+FSR                               00000004
+GP0                               00000000
+GP1                               00000001
+GP2                               00000002
+GP3                               00000003
+GPIO                              00000006
+GPWUF                             00000007
+INDF                              00000000
+INIT                              00000000
+MAIN                              00000005
+NOT_GPPU                          00000006
+NOT_GPWU                          00000007
+NOT_PD                            00000003
+NOT_TO                            00000004
+OSCCAL                            00000005
+PCL                               00000002
+PS0                               00000000
+PS1                               00000001
+PS2                               00000002
+PSA                               00000003
+STATUS                            00000003
+T0CS                              00000005
+T0SE                              00000004
+TMR0                              00000001
+TRISIO0                           00000000
+TRISIO1                           00000001
+TRISIO2                           00000002
+TRISIO3                           00000003
+W                                 00000000
+Z                                 00000002
+_CONFIG                           00000FFF
+_CP_OFF                           00000FFF
+_CP_ON                            00000FF7
+_IDLOC0                           00000100
+_IDLOC1                           00000101
+_IDLOC2                           00000102
+_IDLOC3                           00000103
+_IntRC_OSC                        00000FFF
+MPASM  5.42                          MAIN.ASM   12-17-2025  17:32:05         PAGE  5
+
+
+SYMBOL TABLE
+  LABEL                             VALUE 
+
+_MCLRE_OFF                        00000FEF
+_MCLRE_ON                         00000FFF
+_WDT_OFF                          00000FFB
+_WDT_ON                           00000FFF
+__10F200                          00000001
+d1                                00000010
+d2                                00000011
+
+
+MEMORY USAGE MAP ('X' = Used,  '-' = Unused)
+
+0000 : XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXX ----------------
+0FC0 : ---------------- ---------------- ---------------- ---------------X
+
+All other memory blocks unused.
+
+Program Memory Words Used:    48
+Program Memory Words Free:   208
+
+
+Errors   :     0
+Warnings :     2 reported,     0 suppressed
+Messages :     0 reported,     0 suppressed
+
+

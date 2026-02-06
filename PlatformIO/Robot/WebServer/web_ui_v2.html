@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Robot Clip Editor (v2)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body{font-family:system-ui,Arial;margin:20px}
+    .cell{box-sizing:border-box;flex:0 0 220px;width:220px;min-height:90px;border:1px solid #ddd;padding:6px;background:#fff}
+    .col-controls{display:flex;gap:6px}
+    .action-item{display:flex;justify-content:space-between;align-items:center;padding:4px 6px;border-radius:4px;background:#f8f9fa;margin-bottom:4px}
+    .row-label{width:100px}
+    .table-wrap{overflow:auto}
+    .table-wrap .d-flex{align-items:flex-start}
+    .row-label{width:120px;padding-top:8px}
+    #columns, #eyes-row, #move-row, #audio-row{align-items:flex-start}
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h4>Clip Editor v2</h4>
+    <div>
+      <button id="add-col" class="btn btn-sm btn-outline-primary">＋ Add Column</button>
+      <button id="send" class="btn btn-sm btn-success">Send to server</button>
+      <span id="status" class="ms-2 text-success"></span>
+    </div>
+  </div>
+
+  <div class="table-wrap mb-3">
+    <div class="d-flex">
+      <div class="row-label"></div>
+      <div id="columns" class="d-flex gap-2"></div>
+    </div>
+
+    <div class="d-flex mt-2">
+      <div class="row-label align-self-start"><strong>Eyes</strong></div>
+      <div id="eyes-row" class="d-flex gap-2"></div>
+    </div>
+
+    <div class="d-flex mt-2">
+      <div class="row-label align-self-start"><strong>Move</strong></div>
+      <div id="move-row" class="d-flex gap-2"></div>
+    </div>
+
+    <div class="d-flex mt-2">
+      <div class="row-label align-self-start"><strong>Audio</strong></div>
+      <div id="audio-row" class="d-flex gap-2"></div>
+    </div>
+  </div>
+
+  <div class="mt-3">
+    <small class="text-muted">Controls: click a column header to select it for editing. Actions inside a cell are reorderable and removable.</small>
+  </div>
+</div>
+
+<script>
+  // columns: array of objects {id, eyes:[], move:[], audio:[]}
+  const columns = [];
+  const colsEl = document.getElementById('columns');
+  const eyesRow = document.getElementById('eyes-row');
+  const moveRow = document.getElementById('move-row');
+  const audioRow = document.getElementById('audio-row');
+  const status = document.getElementById('status');
+
+  function uid(){return Math.random().toString(36).slice(2,9)}
+
+  function renderColumns(){
+    colsEl.innerHTML = '';
+    eyesRow.innerHTML = '';
+    moveRow.innerHTML = '';
+    audioRow.innerHTML = '';
+    columns.forEach((c, idx)=>{
+      // header controls
+      const head = document.createElement('div'); head.className='cell text-center'; head.style.minWidth='160px'; head.draggable = true; head.dataset.idx = idx;
+      // label display + edit
+      const labelWrap = document.createElement('div'); labelWrap.style.display='flex'; labelWrap.style.justifyContent='center'; labelWrap.style.alignItems='center';
+      const labelSpan = document.createElement('div'); labelSpan.textContent = (c.label || ('Col ' + (idx+1)));
+      labelSpan.style.fontWeight = '600'; labelSpan.style.marginRight='6px';
+      const editLabel = document.createElement('button'); editLabel.className='btn btn-sm btn-outline-secondary'; editLabel.textContent='✎'; editLabel.onclick = (e)=>{ e.stopPropagation(); const v = prompt('Column label', c.label||('Col '+(idx+1))); if(v!==null){ c.label = v; renderColumns(); } };
+      labelWrap.appendChild(labelSpan); labelWrap.appendChild(editLabel);
+      head.appendChild(labelWrap);
+
+      const hdiv = document.createElement('div'); hdiv.className='col-controls justify-content-center mt-2';
+      const left = document.createElement('button'); left.className='btn btn-sm btn-light'; left.textContent='◄'; left.onclick=()=>moveColLeft(idx);
+      const right = document.createElement('button'); right.className='btn btn-sm btn-light'; right.textContent='►'; right.onclick=()=>moveColRight(idx);
+      const del = document.createElement('button'); del.className='btn btn-sm btn-danger'; del.textContent='✖'; del.onclick=()=>removeCol(idx);
+      hdiv.appendChild(left); hdiv.appendChild(right); hdiv.appendChild(del);
+      head.appendChild(hdiv);
+
+      // drag handlers
+      head.addEventListener('dragstart', (ev)=>{ ev.dataTransfer.setData('text/plain', idx); ev.dataTransfer.effectAllowed='move'; });
+      head.addEventListener('dragover', (ev)=>{ ev.preventDefault(); ev.dataTransfer.dropEffect='move'; head.style.borderColor='#007bff'; });
+      head.addEventListener('dragleave', (ev)=>{ head.style.borderColor='#ddd'; });
+      head.addEventListener('drop', (ev)=>{ ev.preventDefault(); head.style.borderColor='#ddd'; const from = Number(ev.dataTransfer.getData('text/plain')); const to = idx; if(!isNaN(from) && from!==to){ const item = columns.splice(from,1)[0]; columns.splice(to,0,item); renderColumns(); } });
+
+      colsEl.appendChild(head);
+
+      // eyes cell
+      const ec = makeCell(c.eyes, 'eyes', idx);
+      eyesRow.appendChild(ec);
+      // move cell
+      const mc = makeCell(c.move, 'move', idx);
+      moveRow.appendChild(mc);
+      // audio cell
+      const ac = makeCell(c.audio, 'audio', idx);
+      audioRow.appendChild(ac);
+    });
+  }
+
+  function makeCell(list, type, colIdx){
+    const el = document.createElement('div'); el.className='cell'; el.style.minWidth='160px';
+    const listEl = document.createElement('div');
+    function renderList(){
+      listEl.innerHTML='';
+      list.forEach((it, i)=>{
+        const item = document.createElement('div'); item.className='action-item';
+        const span = document.createElement('div'); span.textContent = it;
+        const btns = document.createElement('div');
+        const up = document.createElement('button'); up.className='btn btn-sm btn-light'; up.textContent='▲'; up.onclick=()=>{ if(i>0){ [list[i-1],list[i]]=[list[i],list[i-1]]; renderColumns(); }};
+        const down = document.createElement('button'); down.className='btn btn-sm btn-light'; down.textContent='▼'; down.onclick=()=>{ if(i<list.length-1){ [list[i+1],list[i]]=[list[i],list[i+1]]; renderColumns(); }};
+        const del = document.createElement('button'); del.className='btn btn-sm btn-danger'; del.textContent='✖'; del.onclick=()=>{ list.splice(i,1); renderColumns(); };
+        btns.appendChild(up); btns.appendChild(down); btns.appendChild(del);
+        item.appendChild(span); item.appendChild(btns);
+        listEl.appendChild(item);
+      });
+    }
+    renderList();
+    el.appendChild(listEl);
+
+    // add controls per type
+    const ctrl = document.createElement('div'); ctrl.style.marginTop='6px';
+    if(type==='eyes'){
+      const quick = ['neutral','blink','wink','left','right','up','down','angry','sad'];
+      quick.forEach(q=>{ const b=document.createElement('button'); b.className='btn btn-sm btn-outline-secondary me-1'; b.textContent=q; b.onclick=()=>{ columns[colIdx].eyes.push(q); renderColumns(); }; ctrl.appendChild(b); });
+      const tinput = document.createElement('input'); tinput.placeholder='text...'; tinput.style.width='100px';
+      const tadd = document.createElement('button'); tadd.className='btn btn-sm btn-primary ms-1'; tadd.textContent='+ Text'; tadd.onclick=()=>{ const v=tinput.value.trim(); if(v){ columns[colIdx].eyes.push('text:'+v); tinput.value=''; renderColumns(); }};
+      ctrl.appendChild(tinput); ctrl.appendChild(tadd);
+    }
+    if(type==='move'){
+      // duration input first so quick buttons can read it
+      const col = columns[colIdx];
+      const minput = document.createElement('input'); minput.placeholder='ms'; minput.style.width='80px'; minput.value=(col.move_input||'1000');
+      // keep the column's stored value when user edits
+      minput.addEventListener('input', ()=>{ col.move_input = minput.value; });
+      ctrl.appendChild(minput);
+      const quick = [{d:'F'},{d:'B'},{d:'L'},{d:'R'},{d:'S'}];
+      quick.forEach(q=>{
+        const b=document.createElement('button');
+        b.className='btn btn-sm btn-outline-secondary me-1';
+        b.textContent=q.d;
+        b.onclick=()=>{
+          const v = minput.value.trim();
+          const ms = (v && !isNaN(Number(v))) ? v : '1000';
+          columns[colIdx].move.push(q.d + ms);
+          renderColumns();
+        };
+        ctrl.appendChild(b);
+      });
+      // allow Enter key in the input to add a forward move using current value
+      minput.addEventListener('keypress', (ev)=>{
+        if(ev.key === 'Enter'){
+          const v = minput.value.trim();
+          if(v && !isNaN(Number(v))){ columns[colIdx].move.push('F'+v); renderColumns(); }
+        }
+      });
+    }
+    if(type==='audio'){
+      const select = document.createElement('select'); select.className='form-select form-select-sm'; select.style.width='120px'; const notes=['C3','D3','E3','F3','G3','A3','B3','C4','REST']; notes.forEach(n=>{ const o=document.createElement('option'); o.value=n; o.textContent=n; select.appendChild(o); });
+      const col = columns[colIdx];
+      const adur = document.createElement('input'); adur.placeholder='ms'; adur.style.width='80px'; adur.value=(col.audio_dur||'1000');
+      // persist duration to column so it isn't reset on re-render
+      adur.addEventListener('input', ()=>{ col.audio_dur = adur.value; });
+      // when user changes selection, automatically add the note with current duration
+      select.addEventListener('change', ()=>{
+        const v = (col.audio_dur||adur.value).trim();
+        if(v && !isNaN(Number(v))){ columns[colIdx].audio.push(select.value+','+v); renderColumns(); }
+      });
+      // Enter in duration also adds current selection
+      adur.addEventListener('keypress', (ev)=>{
+        if(ev.key === 'Enter'){
+          const v = adur.value.trim();
+          if(v && !isNaN(Number(v))){ columns[colIdx].audio.push(select.value+','+v); renderColumns(); }
+        }
+      });
+      ctrl.appendChild(select); ctrl.appendChild(adur);
+    }
+    el.appendChild(ctrl);
+    return el;
+  }
+
+  function addCol(){ columns.push({id:uid(), label: 'Col '+(columns.length+1), eyes:[], move:[], audio:[], move_input:'1000', audio_dur:'1000'}); renderColumns(); }
+  function removeCol(i){ columns.splice(i,1); renderColumns(); }
+  function moveColLeft(i){ if(i>0){ const t=columns[i-1]; columns[i-1]=columns[i]; columns[i]=t; renderColumns(); }}
+  function moveColRight(i){ if(i<columns.length-1){ const t=columns[i+1]; columns[i+1]=columns[i]; columns[i]=t; renderColumns(); }}
+
+  document.getElementById('add-col').addEventListener('click', ()=>addCol());
+
+  function buildAndSend(){
+    if(!columns.length) return alert('Add at least one column');
+    // build grouped JSON: outer array per column; inside array contains tokens present in that column
+    const grouped = columns.map(col=>{
+      const items = [];
+      if(col.eyes.length){
+        // eyes_seq token: join non-text with ;, include text tokens separately
+        const eyeTokens = col.eyes.filter(x=>!x.startsWith('text:'));
+        if(eyeTokens.length) items.push('eyes_seq:'+eyeTokens.join(';'));
+        // include text tokens as separate items
+        col.eyes.filter(x=>x.startsWith('text:')).forEach(t=>items.push(t));
+      }
+      if(col.audio.length) items.push('audio:'+col.audio.join(';'));
+      if(col.move.length){
+        // normalize move tokens: keep single-letter direction, convert ms->10ms ticks
+        const mv = col.move.map(s=>{
+          const m1=s.match(/^([FBLRS])(\d+)$/);
+          if(m1){ const dir=m1[1]; const amt=Number(m1[2]); return `move:${dir},${Math.round(amt/10)}` }
+          const m2=s.match(/^(\d+)$/);
+          if(m2){ const amt=Number(m2[1]); return `move:F,${Math.round(amt/10)}` }
+          const parts = s.split(/[,\s]+/);
+          if(parts.length>=2 && !isNaN(Number(parts[1]))){ const raw=parts[0].toUpperCase(); const map={FWD:'F',BACK:'B',LEFT:'L',RIGHT:'R',STOP:'S',F:'F',B:'B',L:'L',R:'R',S:'S'}; const dir=(map[raw]||raw); return `move:${dir},${Math.round(Number(parts[1])/10)}` }
+          return `move:${s}`;
+        });
+        items.push(mv.join(';'));
+      }
+      return items;
+    });
+
+    const json = JSON.stringify(grouped);
+    status.textContent='Sending...';
+    const url = '/commands?cmd=' + encodeURIComponent(json);
+    fetch(url, {method:'POST'}).then(r=>{
+      status.textContent = r.ok? 'Sent' : 'Error '+r.status;
+      setTimeout(()=>status.textContent='',1400);
+    }).catch(e=>{ status.textContent='Error'; setTimeout(()=>status.textContent='',1400); });
+  }
+  document.getElementById('send').addEventListener('click', ()=>buildAndSend());
+
+  // init with 3 columns
+  addCol(); addCol(); addCol();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

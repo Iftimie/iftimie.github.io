@@ -1,0 +1,17 @@
+
+
+(wsl hostname -I)
+uvicorn server:app --host 0.0.0.0 --port 8765
+#172.28.244.62 172.17.0.1
+
+
+netsh interface portproxy delete v4tov4 listenport=8765 listenaddress=0.0.0.0
+
+netsh interface portproxy add v4tov4 listenport=8765 listenaddress=0.0.0.0 connectport=8765 connectaddress=172.28.244.62
+netsh interface portproxy set v4tov4 listenaddress=0.0.0.0 listenport=8765 connectaddress=172.26.169.84 connectport=8765
+New-NetFirewallRule -DisplayName "WebServer 8765" -Direction Inbound -Protocol TCP -LocalPort 8765 -Action Allow
+netsh interface portproxy show all
+
+
+netsh interface portproxy set v4tov4 listenaddress=0.0.0.0 listenport=4096 connectaddress=172.26.169.84 connectport=4096
+New-NetFirewallRule -DisplayName "WebServer 4096" -Direction Inbound -Protocol TCP -LocalPort 4096 -Action Allow

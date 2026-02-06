@@ -1,0 +1,37 @@
+(function () {
+  try {
+    if (typeof api !== "function") {
+      console.error("api() not available");
+      return;
+    }
+
+    const src = api("getSource", { type: "json" });
+    const tracks = src.TRACK || {};
+
+    const keys = Object.keys(tracks);
+
+    console.log("=== PCB TRACKS ===");
+    console.log("Total tracks:", keys.length);
+
+    keys.forEach((key, i) => {
+      const t = tracks[key];
+      if (!t) return;
+
+      const gId = t.gId || key;
+      const net = t.net || "(no net)";
+      const layer = t.layerid;
+
+      console.log(
+        i + 1 + ".",
+        "gId:", gId,
+        "| net:", net,
+        "| layer:", layer
+      );
+    });
+
+    console.log("=== END TRACK LIST ===");
+
+  } catch (e) {
+    console.error("Script error:", e);
+  }
+})();

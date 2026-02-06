@@ -1,0 +1,230 @@
+#include <Arduino.h>
+#include <SPI.h>
+
+// ===================== PINS =====================
+// Nano/Uno SPI pins fixed: MOSI=D11, SCK=D13
+const int PIN_LATCH = 10;  // STCP / LE
+const int PIN_OE_N  = 9;   // OE# (active-low)
+
+// ===================== PANEL CONFIG =====================
+static const uint8_t W = 16;
+static const uint8_t H = 16;
+static const uint8_t LAYERS = 5;
+
+// Framebuffers: fb[layer][y] is a 16-bit row bitmask
+volatile uint16_t fb[LAYERS][H];
+static volatile uint8_t scanY = 0;
+
+// Which single layer is currently being displayed (0..4)
+static volatile uint8_t gShowLayer = 4;
+
+// ===================== TIMER SCANNER (ISR) =====================
+// rowWord: bit y = 1
+static inline uint16_t makeRowWord(uint8_t y) { return (uint16_t)1 << y; }
+
+static inline void latchPulseFast() {
+  digitalWrite(PIN_LATCH, HIGH);
+  digitalWrite(PIN_LATCH, LOW);
+}
+
+ISR(TIMER1_COMPA_vect) {
+  // blank while shifting
+  digitalWrite(PIN_OE_N, HIGH);
+
+  uint8_t y = scanY;
+  uint16_t rowWord = makeRowWord(y);
+  uint8_t sr0_byte = (uint8_t)(rowWord & 0xFF);
+  uint8_t sr1_byte = (uint8_t)((rowWord >> 8) & 0xFF);
+
+  // Read once (volatile) so it doesn't change mid-loop
+  uint8_t show = gShowLayer;
+
+  SPI.beginTransaction(SPISettings(8000000, MSBFIRST, SPI_MODE0));
+
+  // Daisy chain assumed:
+  // MCU -> sr0 -> sr1 -> mbi0 -> mbi1 -> mbi2 -> mbi3 -> mbi4
+  // Shift order must be: mbi4..mbi0, then sr1, sr0
+  for (int l = (int)LAYERS - 1; l >= 0; --l) {
+    uint16_t cols = (l == (int)show) ? fb[l][y] : 0; // ONLY one layer active
+    SPI.transfer((uint8_t)(cols >> 8));
+    SPI.transfer((uint8_t)(cols & 0xFF));
+  }
+
+  SPI.transfer(sr1_byte);
+  SPI.transfer(sr0_byte);
+
+  SPI.endTransaction();
+
+  latchPulseFast();
+  digitalWrite(PIN_OE_N, LOW); // enable LEDs
+
+  scanY++;
+  if (scanY >= H) scanY = 0;
+}
+
+static void startScanner(uint16_t rowRateHz) {
+  cli();
+  TCCR1A = 0;
+  TCCR1B = 0;
+  TCNT1  = 0;
+
+  // prescaler 8 => 2MHz timer clock
+  TCCR1B |= (1 << WGM12);  // CTC
+  TCCR1B |= (1 << CS11);   // prescaler 8
+  OCR1A = (uint16_t)((2000000UL / rowRateHz) - 1);
+
+  TIMSK1 |= (1 << OCIE1A);
+  sei();
+}
+
+// ===================== FB HELPERS =====================
+static inline void clearAll() {
+  cli();
+  for (uint8_t l = 0; l < LAYERS; l++) {
+    for (uint8_t y = 0; y < H; y++) fb[l][y] = 0;
+  }
+  sei();
+}
+
+static inline void clearLayerLocal(uint16_t out[H]) {
+  for (uint8_t y = 0; y < H; y++) out[y] = 0;
+}
+
+static inline void setPixelLocal(uint16_t out[H], int x, int y) {
+  if (x < 0 || x >= (int)W || y < 0 || y >= (int)H) return;
+  out[y] |= (uint16_t)1 << x;
+}
+
+// Draw with a little thickness so it’s readable on 16x16
+static inline void plotThick(uint16_t out[H], int x, int y, uint8_t thick) {
+  setPixelLocal(out, x, y);
+  if (!thick) return;
+  setPixelLocal(out, x + 1, y);
+  setPixelLocal(out, x - 1, y);
+  setPixelLocal(out, x, y + 1);
+  setPixelLocal(out, x, y - 1);
+  if (thick > 1) {
+    setPixelLocal(out, x + 1, y + 1);
+    setPixelLocal(out, x - 1, y + 1);
+    setPixelLocal(out, x + 1, y - 1);
+    setPixelLocal(out, x - 1, y - 1);
+  }
+}
+
+// ===================== TIMING =====================
+static inline bool everyMs(uint32_t &last, uint32_t periodMs) {
+  uint32_t now = millis();
+  if (now - last >= periodMs) { last = now; return true; }
+  return false;
+}
+
+// ===================== 2-ARM GALAXY SPIRAL =====================
+static void drawTwoArmSpiral(uint16_t out[H], float rotRad) {
+  clearLayerLocal(out);
+
+  const float cx = 7.5f;
+  const float cy = 7.5f;
+
+  const float rMax   = 7.5f;
+  const float rStep  = 0.28f;   // denser so thin still reads
+  const float pitch  = 1.05f;
+  const uint8_t thick = 0;      // thin arms
+
+  // Bright core
+  plotThick(out, (int)roundf(cx), (int)roundf(cy), 2);
+
+  for (float r = 0.6f; r <= rMax; r += rStep) {
+    float theta = rotRad + pitch * r;
+
+    int x0 = (int)lroundf(cx + r * cosf(theta));
+    int y0 = (int)lroundf(cy + r * sinf(theta));
+    plotThick(out, x0, y0, thick);
+
+    float theta2 = theta + 3.1415926f;
+    int x1 = (int)lroundf(cx + r * cosf(theta2));
+    int y1 = (int)lroundf(cy + r * sinf(theta2));
+    plotThick(out, x1, y1, thick);
+  }
+}
+
+// Keep spiral rotating continuously on ALL layers (phase shifted),
+// but the ISR only displays one layer (gShowLayer).
+static void animGalaxyAllLayers() {
+  static uint32_t tAnim = 0;
+  static int baseDeg = 0;
+
+  const uint32_t FRAME_MS      = 100;
+  const int ROT_STEP_DEG       = 5;    // rotation speed
+  const int LAYER_OFFSET_DEG   = 45;   // phase offset between layers
+
+  if (!everyMs(tAnim, FRAME_MS)) return;
+
+  // rotate other way
+  baseDeg -= ROT_STEP_DEG;
+  baseDeg %= 360;
+  if (baseDeg < 0) baseDeg += 360;
+
+  uint16_t tmp[H];
+
+  // layer4 is the "lead", others lag behind it
+  for (int l = (int)LAYERS - 1; l >= 0; --l) {
+    int deg = baseDeg - ((int)LAYERS - 1 - l) * LAYER_OFFSET_DEG;
+    deg %= 360; if (deg < 0) deg += 360;
+
+    float rotRad = deg * 3.1415926f / 180.0f;
+
+    drawTwoArmSpiral(tmp, rotRad);
+
+    // Commit to framebuffer (avoid tearing vs ISR)
+    cli();
+    for (uint8_t y = 0; y < H; y++) fb[l][y] = tmp[y];
+    sei();
+  }
+}
+
+// Every 2 seconds, move the displayed layer:
+// 4 -> 3 -> 2 -> 1 -> 0 -> 1 -> 2 -> 3 -> 4 -> ...
+static void cycleDisplayedLayer() {
+  static uint32_t tLayer = 0;
+  static int dir = -1; // start going 4->0
+
+  const uint32_t SHOW_LAYER_MS = 2000;
+
+  if (!everyMs(tLayer, SHOW_LAYER_MS)) return;
+
+  int next = (int)gShowLayer + dir;
+
+  if (next < 0) {
+    next = 1;      // bounce back
+    dir = +1;
+  } else if (next >= (int)LAYERS) {
+    next = (int)LAYERS - 2; // bounce back
+    dir = -1;
+  }
+
+  gShowLayer = (uint8_t)next;
+}
+
+// ===================== ARDUINO =====================
+void setup() {
+  pinMode(PIN_LATCH, OUTPUT);
+  pinMode(PIN_OE_N, OUTPUT);
+  digitalWrite(PIN_LATCH, LOW);
+  digitalWrite(PIN_OE_N, HIGH);
+
+  SPI.begin();
+  clearAll();
+
+  // 2000 rows/sec => 125 Hz refresh
+  startScanner(2000);
+
+  Serial.begin(115200);
+}
+
+void loop() {
+  // keep spiral running continuously (all layers updated)
+  animGalaxyAllLayers();
+
+  // but only display one layer at a time, switching every 2 seconds
+  cycleDisplayedLayer();
+}

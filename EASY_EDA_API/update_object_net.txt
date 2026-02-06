@@ -1,0 +1,64 @@
+(function () {
+  try {
+    if (typeof api !== "function") {
+      console.error("api() not available");
+      return;
+    }
+
+    const OLD_NET = "COL9_K";
+    const NEW_NET = "COL10_K";
+
+    const src = api("getSource", { type: "json" });
+
+    // PCB object types that can carry a net
+    const NETTABLE_TYPES = [
+      "TRACK",
+      "PAD",
+      "VIA",
+      "ARC",
+      "CIRCLE",
+      "RECT",
+      "COPPERAREA",
+      "SOLIDREGION"
+    ];
+
+    let changes = 0;
+
+    NETTABLE_TYPES.forEach(type => {
+      const objs = src[type];
+      if (!objs || typeof objs !== "object") return;
+
+      Object.keys(objs).forEach(key => {
+        const o = objs[key];
+        if (!o || o.net !== OLD_NET || !o.gId) return;
+
+        api("updateShape", {
+          shapeType: type,
+          jsonCache: {
+            gId: o.gId,
+            net: NEW_NET
+          }
+        });
+
+        console.log(
+          "Updated",
+          type,
+          "gId:", o.gId,
+          OLD_NET, "→", NEW_NET
+        );
+
+        changes++;
+      });
+    });
+
+    alert(
+      "Done ✅\n\n" +
+      "Net renamed: " + OLD_NET + " → " + NEW_NET + "\n" +
+      "Objects updated: " + changes
+    );
+
+  } catch (e) {
+    console.error("Script error:", e);
+    alert("Error: " + (e.message || e));
+  }
+})();

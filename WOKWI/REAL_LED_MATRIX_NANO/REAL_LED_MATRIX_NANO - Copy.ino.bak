@@ -1,0 +1,285 @@
+#include <Arduino.h>
+#include <SPI.h>
+
+// ===================== PINS =====================
+// SPI pins on UNO are fixed:
+//   MOSI = D11, SCK = D13
+const int PIN_LATCH = 10;  // SR_LATCH (STCP / LE)
+const int PIN_OE_N  = 9;   // MBI OE# (active-low)  <-- move OE here
+
+// ===================== PANEL CONFIG =====================
+static const uint8_t W = 16;
+static const uint8_t H = 16;
+static const uint8_t LAYERS = 5;
+
+// Framebuffers: fb[layer][y] is a 16-bit row bitmask
+volatile uint16_t fb[LAYERS][H];
+
+// ===================== MINI GRAPHICS API =====================
+namespace Gfx {
+
+static inline void clearLayer(uint8_t layer) {
+  if (layer >= LAYERS) return;
+  for (uint8_t y = 0; y < H; y++) fb[layer][y] = 0;
+}
+
+static inline void clearAll() {
+  for (uint8_t l = 0; l < LAYERS; l++) clearLayer(l);
+}
+
+static inline void setPixel(uint8_t layer, uint8_t x, uint8_t y, bool on) {
+  if (layer >= LAYERS || x >= W || y >= H) return;
+  uint16_t mask = (uint16_t)1 << x;
+  if (on) fb[layer][y] |= mask;
+  else    fb[layer][y] &= ~mask;
+}
+
+static inline void drawRect(uint8_t layer,
+                            uint8_t x0, uint8_t y0, uint8_t x1, uint8_t y1,
+                            bool on) {
+  if (layer >= LAYERS) return;
+
+  if (x1 < x0) { uint8_t t = x0; x0 = x1; x1 = t; }
+  if (y1 < y0) { uint8_t t = y0; y0 = y1; y1 = t; }
+  if (x0 >= W || y0 >= H) return;
+  if (x1 >= W) x1 = W - 1;
+  if (y1 >= H) y1 = H - 1;
+
+  for (uint8_t x = x0; x <= x1; x++) {
+    setPixel(layer, x, y0, on);
+    setPixel(layer, x, y1, on);
+  }
+  for (uint8_t y = y0; y <= y1; y++) {
+    setPixel(layer, x0, y, on);
+    setPixel(layer, x1, y, on);
+  }
+}
+
+static inline void blit8x8(uint8_t layer, int x0, int y0, const uint8_t sprite[8]) {
+  if (layer >= LAYERS) return;
+  for (int y = 0; y < 8; y++) {
+    uint8_t row = sprite[y];
+    for (int x = 0; x < 8; x++) {
+      bool on = (row >> (7 - x)) & 1;
+      int px = x0 + x;
+      int py = y0 + y;
+      if (on && px >= 0 && px < (int)W && py >= 0 && py < (int)H) {
+        setPixel(layer, (uint8_t)px, (uint8_t)py, true);
+      }
+    }
+  }
+}
+
+static inline void blit8x8Centered(uint8_t layer, const uint8_t sprite[8]) {
+  blit8x8(layer, (W - 8) / 2, (H - 8) / 2, sprite);
+}
+
+static inline void blit8x8ScaledCentered(uint8_t layer, const uint8_t sprite[8], uint8_t factor) {
+  if (layer >= LAYERS) return;
+  if (factor == 1) { blit8x8Centered(layer, sprite); return; }
+  if (factor != 2) return;
+
+  // 8x8 -> 16x16, top-left (0,0)
+  for (int y = 0; y < 8; y++) {
+    uint8_t row = sprite[y];
+    for (int x = 0; x < 8; x++) {
+      if (!((row >> (7 - x)) & 1)) continue;
+      int px = x * 2;
+      int py = y * 2;
+      for (int dy = 0; dy < 2; dy++) for (int dx = 0; dx < 2; dx++) {
+        setPixel(layer, (uint8_t)(px + dx), (uint8_t)(py + dy), true);
+      }
+    }
+  }
+}
+
+} // namespace Gfx
+
+// ===================== FIXED-RATE SCANNER (Timer ISR) =====================
+//
+// Daisy chain assumed:
+//   UNO -> sr0 -> sr1 -> mbi0 -> mbi1 -> mbi2 -> mbi3 -> mbi4
+//
+// Shift order MUST be:
+//   mbi4, mbi3, mbi2, mbi1, mbi0, sr1, sr0
+//
+// We'll send 12 bytes per row:
+//   5 layers * 2 bytes = 10 bytes
+//   sr1 = 1 byte
+//   sr0 = 1 byte
+//
+static volatile uint8_t scanY = 0;
+
+// rowWord: bit y = 1
+static inline uint16_t makeRowWord(uint8_t y) { return (uint16_t)1 << y; }
+
+static inline void latchPulseFast() {
+  digitalWrite(PIN_LATCH, HIGH);
+  digitalWrite(PIN_LATCH, LOW);
+}
+
+ISR(TIMER1_COMPA_vect) {
+  // blank while shifting
+  digitalWrite(PIN_OE_N, HIGH);
+
+  uint8_t y = scanY;
+  uint16_t rowWord = makeRowWord(y);
+  uint8_t sr0_byte = (uint8_t)(rowWord & 0xFF);
+  uint8_t sr1_byte = (uint8_t)((rowWord >> 8) & 0xFF);
+
+  SPI.beginTransaction(SPISettings(8000000, MSBFIRST, SPI_MODE0));
+
+  // mbi4..mbi0
+  for (int l = (int)LAYERS - 1; l >= 0; --l) {
+    uint16_t cols = fb[l][y];
+    SPI.transfer((uint8_t)(cols >> 8));   // high byte first (MSB-first)
+    SPI.transfer((uint8_t)(cols & 0xFF)); // low byte
+  }
+
+  // sr1, sr0
+  SPI.transfer(sr1_byte);
+  SPI.transfer(sr0_byte);
+
+  SPI.endTransaction();
+
+  // latch everything
+  latchPulseFast();
+
+  // enable LEDs
+  digitalWrite(PIN_OE_N, LOW);
+
+  // next row
+  scanY++;
+  if (scanY >= H) scanY = 0;
+}
+
+// Configure Timer1 to fire at a fixed row rate.
+// Example: rowRate = 2000 rows/sec => refresh = 2000/16 = 125 Hz (no flicker)
+static void startScanner(uint16_t rowRateHz) {
+  cli();
+  TCCR1A = 0;
+  TCCR1B = 0;
+  TCNT1  = 0;
+
+  // prescaler 8 gives 2MHz timer clock (16MHz/8)
+  // OCR1A = (2,000,000 / rowRateHz) - 1
+  TCCR1B |= (1 << WGM12);  // CTC
+  TCCR1B |= (1 << CS11);   // prescaler 8
+  OCR1A = (uint16_t)((2000000UL / rowRateHz) - 1);
+
+  TIMSK1 |= (1 << OCIE1A); // enable compare interrupt
+  sei();
+}
+
+// ===================== TIMING HELPERS =====================
+static inline bool everyMs(uint32_t &last, uint32_t periodMs) {
+  uint32_t now = millis();
+  if (now - last >= periodMs) { last = now; return true; }
+  return false;
+}
+
+// ===================== ANIMATIONS =====================
+static const uint8_t HEART8[8] = {
+  0b01100110,
+  0b11111111,
+  0b11111111,
+  0b11111111,
+  0b01111110,
+  0b00111100,
+  0b00011000,
+  0b00000000
+};
+
+static void animRadiatingSquaresStep(uint8_t step) {
+  for (uint8_t l = 0; l < LAYERS; l++) {
+    uint8_t s = (l % 2 == 0) ? step : (uint8_t)(7 - step);
+
+    const int cx0 = 7, cx1 = 8;
+    const int cy0 = 7, cy1 = 8;
+
+    int x0 = cx0 - (int)s;
+    int y0 = cy0 - (int)s;
+    int x1 = cx1 + (int)s;
+    int y1 = cy1 + (int)s;
+
+    Gfx::clearLayer(l);
+
+    if (x0 < 0) x0 = 0;
+    if (y0 < 0) y0 = 0;
+    if (x1 > 15) x1 = 15;
+    if (y1 > 15) y1 = 15;
+
+    Gfx::drawRect(l, (uint8_t)x0, (uint8_t)y0, (uint8_t)x1, (uint8_t)y1, true);
+  }
+}
+
+static void animRadiatingSquares() {
+  static uint32_t tAnim = 0;
+  static uint8_t step = 0;
+  if (everyMs(tAnim, 35)) {          // slower update; scan is independent now
+    animRadiatingSquaresStep(step);
+    step = (step + 1) & 7;
+  }
+}
+
+static void drawHeartWithGlow(uint8_t layer, uint8_t glow) {
+  Gfx::clearLayer(layer);
+
+  if (layer < 4) Gfx::blit8x8Centered(layer, HEART8);
+  else           Gfx::blit8x8ScaledCentered(layer, HEART8, 2);
+
+  if (layer < 4 && glow > 0) {
+    int x0 = 4 - (int)glow;
+    int y0 = 4 - (int)glow;
+    int x1 = 11 + (int)glow;
+    int y1 = 11 + (int)glow;
+    if (x0 < 0) x0 = 0;
+    if (y0 < 0) y0 = 0;
+    if (x1 > 15) x1 = 15;
+    if (y1 > 15) y1 = 15;
+    Gfx::drawRect(layer, (uint8_t)x0, (uint8_t)y0, (uint8_t)x1, (uint8_t)y1, true);
+  }
+}
+
+static void animHeartStack() {
+  static uint32_t tAnim = 0;
+  static uint8_t activeLayer = 0;
+
+  if (!everyMs(tAnim, 1000)) return;
+
+  Gfx::clearAll();
+  uint8_t glow = (activeLayer < 4) ? activeLayer : 0;
+  drawHeartWithGlow(activeLayer, glow);
+
+  activeLayer++;
+  if (activeLayer >= LAYERS) activeLayer = 0;
+}
+
+// ===================== MODE =====================
+enum AnimMode : uint8_t { ANIM_SQUARES = 0, ANIM_HEART_STACK = 1 };
+static AnimMode mode = ANIM_HEART_STACK;
+
+// ===================== ARDUINO =====================
+void setup() {
+  pinMode(PIN_LATCH, OUTPUT);
+  pinMode(PIN_OE_N, OUTPUT);
+  digitalWrite(PIN_LATCH, LOW);
+  digitalWrite(PIN_OE_N, HIGH); // start blanked
+
+  SPI.begin();
+  Gfx::clearAll();
+
+  // 2000 rows/sec => 125Hz refresh
+  startScanner(2000);
+
+  Serial.begin(115200);
+}
+
+void loop() {
+  // animations only update framebuffer; scanner is always running in ISR
+  switch (mode) {
+    case ANIM_SQUARES:     animRadiatingSquares(); break;
+    case ANIM_HEART_STACK: animHeartStack(); break;
+    default: break;
+  }
+}

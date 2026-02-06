@@ -1,0 +1,213 @@
+
+
+Microchip MPLAB XC8 Assembler V3.10 build 20250813170317 
+                                                                                                           Sat Dec 13 05:18:59 2025
+
+
+     1                           	processor	10F200
+     2                           	pagewidth 132
+     3                           	psect	udata,global,class=RAM,space=1,delta=1,noexec
+     4                           	psect	udata_bank0,global,class=BANK0,space=1,delta=1,noexec
+     5                           	psect	code,global,class=CODE,space=0,delta=2
+     6                           	psect	data,global,class=STRCODE,space=0,delta=2,noexec
+     7                           	psect	resetVec,global,class=CODE,space=0,delta=2
+     8                           	psect	config,global,abs,ovrld,class=CONFIG,space=4,delta=2,noexec
+     9      000                     INDF            equ	0
+    10      000                     INDF_INDF_POSN  equ	0
+    11      000                     INDF_INDF_POSITION equ	0
+    12      008                     INDF_INDF_SIZE  equ	8
+    13      008                     INDF_INDF_LENGTH equ	8
+    14      0FF                     INDF_INDF_MASK  equ	255
+    15      001                     TMR0            equ	1
+    16      000                     TMR0_TMR0_POSN  equ	0
+    17      000                     TMR0_TMR0_POSITION equ	0
+    18      008                     TMR0_TMR0_SIZE  equ	8
+    19      008                     TMR0_TMR0_LENGTH equ	8
+    20      0FF                     TMR0_TMR0_MASK  equ	255
+    21      002                     PCL             equ	2
+    22      000                     PCL_PCL_POSN    equ	0
+    23      000                     PCL_PCL_POSITION equ	0
+    24      008                     PCL_PCL_SIZE    equ	8
+    25      008                     PCL_PCL_LENGTH  equ	8
+    26      0FF                     PCL_PCL_MASK    equ	255
+    27      003                     STATUS          equ	3
+    28      000                     STATUS_C_POSN   equ	0
+    29      000                     STATUS_C_POSITION equ	0
+    30      001                     STATUS_C_SIZE   equ	1
+    31      001                     STATUS_C_LENGTH equ	1
+    32      001                     STATUS_C_MASK   equ	1
+    33      001                     STATUS_DC_POSN  equ	1
+    34      001                     STATUS_DC_POSITION equ	1
+    35      001                     STATUS_DC_SIZE  equ	1
+    36      001                     STATUS_DC_LENGTH equ	1
+    37      002                     STATUS_DC_MASK  equ	2
+    38      002                     STATUS_Z_POSN   equ	2
+    39      002                     STATUS_Z_POSITION equ	2
+    40      001                     STATUS_Z_SIZE   equ	1
+    41      001                     STATUS_Z_LENGTH equ	1
+    42      004                     STATUS_Z_MASK   equ	4
+    43      003                     STATUS_nPD_POSN equ	3
+    44      003                     STATUS_nPD_POSITION equ	3
+    45      001                     STATUS_nPD_SIZE equ	1
+    46      001                     STATUS_nPD_LENGTH equ	1
+    47      008                     STATUS_nPD_MASK equ	8
+    48      004                     STATUS_nTO_POSN equ	4
+    49      004                     STATUS_nTO_POSITION equ	4
+    50      001                     STATUS_nTO_SIZE equ	1
+    51      001                     STATUS_nTO_LENGTH equ	1
+    52      010                     STATUS_nTO_MASK equ	16
+    53      007                     STATUS_GPWUF_POSN equ	7
+    54      007                     STATUS_GPWUF_POSITION equ	7
+    55      001                     STATUS_GPWUF_SIZE equ	1
+    56      001                     STATUS_GPWUF_LENGTH equ	1
+    57      080                     STATUS_GPWUF_MASK equ	128
+    58      000                     STATUS_CARRY_POSN equ	0
+    59      000                     STATUS_CARRY_POSITION equ	0
+    60      001                     STATUS_CARRY_SIZE equ	1
+    61      001                     STATUS_CARRY_LENGTH equ	1
+    62      001                     STATUS_CARRY_MASK equ	1
+    63      002                     STATUS_ZERO_POSN equ	2
+    64      002                     STATUS_ZERO_POSITION equ	2
+    65      001                     STATUS_ZERO_SIZE equ	1
+    66      001                     STATUS_ZERO_LENGTH equ	1
+    67      004                     STATUS_ZERO_MASK equ	4
+    68      004                     FSR             equ	4
+    69      000                     FSR_FSR_POSN    equ	0
+    70      000                     FSR_FSR_POSITION equ	0
+    71      008                     FSR_FSR_SIZE    equ	8
+    72      008                     FSR_FSR_LENGTH  equ	8
+    73      0FF                     FSR_FSR_MASK    equ	255
+    74      005                     OSCCAL          equ	5
+    75      000                     OSCCAL_FOSC4_POSN equ	0
+    76      000                     OSCCAL_FOSC4_POSITION equ	0
+    77      001                     OSCCAL_FOSC4_SIZE equ	1
+    78      001                     OSCCAL_FOSC4_LENGTH equ	1
+    79      001                     OSCCAL_FOSC4_MASK equ	1
+    80      001                     OSCCAL_CAL_POSN equ	1
+    81      001                     OSCCAL_CAL_POSITION equ	1
+    82      007                     OSCCAL_CAL_SIZE equ	7
+    83      007                     OSCCAL_CAL_LENGTH equ	7
+    84      0FE                     OSCCAL_CAL_MASK equ	254
+    85      001                     OSCCAL_CAL0_POSN equ	1
+    86      001                     OSCCAL_CAL0_POSITION equ	1
+    87      001                     OSCCAL_CAL0_SIZE equ	1
+    88      001                     OSCCAL_CAL0_LENGTH equ	1
+    89      002                     OSCCAL_CAL0_MASK equ	2
+    90      002                     OSCCAL_CAL1_POSN equ	2
+    91      002                     OSCCAL_CAL1_POSITION equ	2
+    92      001                     OSCCAL_CAL1_SIZE equ	1
+    93      001                     OSCCAL_CAL1_LENGTH equ	1
+    94      004                     OSCCAL_CAL1_MASK equ	4
+    95      003                     OSCCAL_CAL2_POSN equ	3
+    96      003                     OSCCAL_CAL2_POSITION equ	3
+    97      001                     OSCCAL_CAL2_SIZE equ	1
+    98      001                     OSCCAL_CAL2_LENGTH equ	1
+    99      008                     OSCCAL_CAL2_MASK equ	8
+   100      004                     OSCCAL_CAL3_POSN equ	4
+   101      004                     OSCCAL_CAL3_POSITION equ	4
+   102      001                     OSCCAL_CAL3_SIZE equ	1
+   103      001                     OSCCAL_CAL3_LENGTH equ	1
+   104      010                     OSCCAL_CAL3_MASK equ	16
+   105      005                     OSCCAL_CAL4_POSN equ	5
+   106      005                     OSCCAL_CAL4_POSITION equ	5
+   107      001                     OSCCAL_CAL4_SIZE equ	1
+   108      001                     OSCCAL_CAL4_LENGTH equ	1
+   109      020                     OSCCAL_CAL4_MASK equ	32
+   110      006                     OSCCAL_CAL5_POSN equ	6
+   111      006                     OSCCAL_CAL5_POSITION equ	6
+   112      001                     OSCCAL_CAL5_SIZE equ	1
+   113      001                     OSCCAL_CAL5_LENGTH equ	1
+   114      040                     OSCCAL_CAL5_MASK equ	64
+   115      007                     OSCCAL_CAL6_POSN equ	7
+   116      007                     OSCCAL_CAL6_POSITION equ	7
+   117      001                     OSCCAL_CAL6_SIZE equ	1
+   118      001                     OSCCAL_CAL6_LENGTH equ	1
+   119      080                     OSCCAL_CAL6_MASK equ	128
+   120      006                     GPIO            equ	6
+   121      000                     GPIO_GP0_POSN   equ	0
+   122      000                     GPIO_GP0_POSITION equ	0
+   123      001                     GPIO_GP0_SIZE   equ	1
+   124      001                     GPIO_GP0_LENGTH equ	1
+   125      001                     GPIO_GP0_MASK   equ	1
+   126      001                     GPIO_GP1_POSN   equ	1
+   127      001                     GPIO_GP1_POSITION equ	1
+   128      001                     GPIO_GP1_SIZE   equ	1
+   129      001                     GPIO_GP1_LENGTH equ	1
+   130      002                     GPIO_GP1_MASK   equ	2
+   131      002                     GPIO_GP2_POSN   equ	2
+   132      002                     GPIO_GP2_POSITION equ	2
+   133      001                     GPIO_GP2_SIZE   equ	1
+   134      001                     GPIO_GP2_LENGTH equ	1
+   135      004                     GPIO_GP2_MASK   equ	4
+   136      003                     GPIO_GP3_POSN   equ	3
+   137      003                     GPIO_GP3_POSITION equ	3
+   138      001                     GPIO_GP3_SIZE   equ	1
+   139      001                     GPIO_GP3_LENGTH equ	1
+   140      008                     GPIO_GP3_MASK   equ	8
+   141                           
+   142                           	psect	code
+   143      001                     start_initialization:
+   144      001  0A02               	goto	_main
+   145      002                     _main:	
+   146                           ; --- your program ---
+   147                           
+   148      002  0C0D               	movlw	13	; TRIS: ((GPIO) and 01Fh), 3,((GPIO) and 01Fh), 2,((GPIO) and 01Fh), 0 inputs; ((GPIO) and
+      +                           01Fh), 1 output
+   149      003  0006               	tris	6
+   150      004                     loop:
+   151      004  0526               	bsf	6,1	; LED ON (((GPIO) and 01Fh), 1)
+   152      005  0909               	call	delay
+   153      006  0426               	bcf	6,1	; LED OFF
+   154      007  0909               	call	delay
+   155      008  0A04               	goto	loop
+   156      009                     delay:
+   157      009  0CC8               	movlw	200
+   158      00A  0030               	movwf	16
+   159      00B                     d1:
+   160      00B  02F0               	decfsz	16,f
+   161      00C  0A0B               	goto	d1
+   162      00D  0800               	retlw	0
+   163                           
+   164                           	psect	data
+   165      000                     stk_offset      set	0
+   166      000                     auto_size       set	0
+   167                           
+   168                           ; stack_auto defines a symbol /name/_offset which equates to the
+   169                           ; stack offset of the auto object in question
+   170      000                     
+   171                           ; stack_param defines a symbol /name/_offset which equates to the
+   172                           ; stack offset of the parameter object in question
+   173      000                     
+   174                           ; alloc_stack adjusts the SP to allocate space for auto objects
+   175                           ; it also links in to the btemp symbol so that can be used
+   176      000                     
+   177                           ; restore_stack adjusts the SP to remove all auto and parameter
+   178                           ; objects from the stack prior to returning from a function
+   179      010                     counter         equ	16
+   180                           
+   181                           	psect	resetVec
+   182      00E                     resetVec:	
+   183                           ; --- reset / entry glue expected by XC8 ---
+   184                           
+   185      00E  0A01               	goto	start_initialization
+   186                           
+   187                           	psect	config
+   188                           
+   189                           ;Config register CONFIG @ 0xFFF
+   190                           ;	Oscillator
+   191                           ;	OSC = 0x1, unprogrammed default
+   192                           ;	Watchdog Timer
+   193                           ;	WDTE = OFF, WDT disabled
+   194                           ;	Code Protect
+   195                           ;	CP = OFF, Code protection off
+   196                           ;	Master Clear Enable
+   197                           ;	MCLRE = OFF, GP3/MCLR pin fuction is digital I/O, MCLR internally tied to VDD
+   198      FFF                     	org	4095
+   199      FFF  0FEB               	dw	4075
+
+
+Microchip Technology PIC Macro Assembler V3.10 build 20250813170317 
+Symbol Table                                                                                               Sat Dec 13 05:18:59 2025
+
+                   d1 000B                   GPIO 0006                   loop 0004                  _main 0002  
+                delay 0009                counter 0010               resetVec 000E   start_initialization 0001  

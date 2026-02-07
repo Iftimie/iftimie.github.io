@@ -1,0 +1,370 @@
+/* 'https://cdn.jsdelivr.net/gh/orestbida/cookieconsent@3.0.1/dist/cookieconsent.umd.js'; */
+import '/js/cookieconsent.umd.js';
+
+CookieConsent.run({
+    guiOptions: {
+        consentModal: {
+            layout: "cloud",
+            position: "bottom center",
+            equalWeightButtons: false,
+            flipButtons: false
+        },
+        preferencesModal: {
+            layout: "box",
+            position: "right",
+            equalWeightButtons: false,
+            flipButtons: false
+        }
+    },
+    categories: {
+        necessary: {
+            enabled: true,
+            readOnly: true
+        },
+        functionality: {},
+        analytics: {
+            readOnly: false,
+            autoClear: {
+                cookies: [
+                    {
+                        name: /^(_ga)/
+                    },
+                    {
+                        name: '_gid'
+                    },
+                ]
+            }
+        },
+        marketing: {
+            readOnly: false,
+            autoClear: {
+                cookies: [
+                    {
+                        name: '_fbp'
+                    },
+                    {
+                        name: 'VISITOR_INFO1_LIVE'
+                    },
+                    {
+                        name: 'VISITOR_PRIVACY_METADATA'
+                    },
+                ]
+            }
+        }
+    },
+    language: {
+        default: "en",
+        autoDetect: "browser",
+        translations: {
+            en: {
+                consentModal: {
+                    description: "<img src=\"/img/icon-cookie.svg\"> We use cookies to improve your browsing experience. By clicking Accept All, you agree to the use of cookies.",
+                    acceptAllBtn: "Accept All",
+                    acceptNecessaryBtn: "Reject All",
+                    showPreferencesBtn: "<img src=\"/img/icon-faders-horizontal.svg\">",
+                },
+                preferencesModal: {
+                    title: "Customize Consent Preferences",
+                    acceptAllBtn: "Accept All",
+                    acceptNecessaryBtn: "Reject All",
+                    savePreferencesBtn: "Save References",
+                    closeIconLabel: "Close modal",
+                    serviceCounterLabel: "Service|Services",
+                    sections: [
+                        {
+                            title: "Cookie Usage",
+                            description: "We use cookies to enhance your experience on our website. You can choose to enable or disable some of these cookies, but please note that disabling certain cookies may affect your browsing experience. <span class=\"custom\"> For any query in relation to our policy on cookies and your choices, please <a class=\"cc__link\" href=\"https://www.circuitbread.com/our-team\">contact us</a>.</span><span> Manage your cookie preferences below.</span>"
+                        },
+                        {
+                            title: "Strictly Necessary Cookies <span class=\"pm__badge\">Always Enabled</span>",
+                            description: "These cookies are necessary for the website to function and cannot be switched off in our systems. They help to make the website usable by enabling basic functions like page navigation and access to secure areas of the website.",
+                            linkedCategory: "necessary",
+                            cookieTable: {
+                                headers: {
+                                    name: 'Cookie',
+                                    description: 'Description',
+                                    duration: 'Duration'
+                                },
+                                body: [
+                                    {
+                                        name: 'CraftSessionId',
+                                        description: 'This cookie is used to maintain the session state for the user\'s visit, ensuring a smooth and consistent browsing experience.',
+                                        duration: 'session'
+                                    },
+                                    {
+                                        name: 'CRAFT_CSRF_TOKEN',
+                                        description: 'This cookie is used to enhance the security of forms on the website by preventing Cross-Site Request Forgery (CSRF) attacks.',
+                                        duration: 'session'
+                                    },
+                                    {
+                                        name: '_GRECAPTCHA',
+                                        description: 'This cookie is used by Google reCAPTCHA to verify that the user is a human and to protect the website from spam and abuse.',
+                                        duration: '6 months'
+                                    },
+                                    {
+                                        name: 'rc::a',
+                                        description: 'This cookies is used by Google reCAPTCHA to distinguish between humans and bots for security purposes.',
+                                        duration: 'never'
+                                    },
+                                    {
+                                        name: 'rc::f',
+                                        description: 'This cookies is used by Google reCAPTCHA to distinguish between humans and bots for security purposes.',
+                                        duration: 'never'
+                                    },
+                                    {
+                                        name: 'rc::c',
+                                        description: 'This cookies is used by Google reCAPTCHA to distinguish between humans and bots for security purposes.',
+                                        duration: 'session'
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            title: "Functionality Cookies",
+                            description: "Functionality cookies enable the website to provide enhanced functionality and personalization. These cookies may be set by us or by third-party providers whose services we have added to our pages. They help in storing user preferences, device settings, and session data to enhance the user experience.",
+                            linkedCategory: "functionality",
+                            cookieTable: {
+                                headers: {
+                                    name: 'Cookie',
+                                    description: 'Description',
+                                    duration: 'Duration'
+                                },
+                                body: [
+                                    {
+                                        name: 'yt-remote-device-id',
+                                        description: 'This cookie is used by YouTube to store the user\'s device preferences and settings, such as video playback and interaction settings across different devices.',
+                                        duration: 'never'
+                                    },
+                                    {
+                                        name: 'yt-remote-connected-devices',
+                                        description: 'This cookie is used by YouTube to store and manage a list of devices connected to the user’s YouTube account, allowing for synchronized playback and consistent settings across multiple devices.',
+                                        duration: 'never'
+                                    },
+                                    {
+                                        name: 'ytidb::LAST_RESULT_ENTRY_KEY',
+                                        description: 'This cookie is used by YouTube to store the results of the last database query related to video recommendations and user interactions, helping to improve content suggestions and user experience.',
+                                        duration: 'never'
+                                    },
+                                    {
+                                        name: 'yt-player-headers-readable',
+                                        description: 'This cookie is used by YouTube to store user settings and preferences related to video playback, including embedded videos on external websites, to enhance the video playback experience.',
+                                        duration: 'never'
+                                    },
+                                    {
+                                        name: 'yt-remote-session-app',
+                                        description: 'This cookie is used by YouTube to manage and synchronize user sessions for video playback across multiple devices, ensuring a seamless viewing experience.',
+                                        duration: 'session'
+                                    },
+                                    {
+                                        name: 'yt-remote-cast-installed',
+                                        description: 'This cookie is used by YouTube to determine whether the user has a casting device or application installed that supports YouTube’s casting feature, enabling the user to stream videos to other devices.',
+                                        duration: 'session'
+                                    },
+                                    {
+                                        name: 'yt-remote-session-name',
+                                        description: 'This cookie is used by YouTube to manage and synchronize video playback sessions across different devices, ensuring that playback settings and progress are consistent.',
+                                        duration: 'session'
+                                    },
+                                    {
+                                        name: 'yt-remote-cast-available',
+                                        description: 'This cookie is used by YouTube to determine if the user has access to casting options on their device, allowing the user to cast YouTube videos to other compatible devices.',
+                                        duration: 'session'
+                                    },
+                                    {
+                                        name: 'yt-remote-fast-check-period',
+                                        description: 'This cookie is used by YouTube to manage the frequency of checks for updates to remote session data, optimizing the synchronization of video playback and settings across devices.',
+                                        duration: 'session'
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            title: "Analytics Cookies",
+                            description: "Analytics cookies help us understand how visitors interact with our website by collecting and reporting information anonymously. These cookies provide insights into user behavior and preferences, allowing us to enhance the user experience and improve our services.",
+                            linkedCategory: "analytics",
+                            cookieTable: {
+                                headers: {
+                                    name: 'Cookie',
+                                    description: 'Description',
+                                    duration: 'Duration'
+                                },
+                                body: [
+                                    {
+                                        name: '_ga',
+                                        description: 'This cookie is used by Google Analytics to distinguish unique users by assigning a randomly generated number as a client identifier. It helps track user interactions with the website over multiple sessions.',
+                                        duration: '1 year 1 month 4 days'
+                                    },
+                                    {
+                                        name: '_gid',
+                                        description: 'This cookie is used by Google Analytics to store and update a unique value for each page visited. It helps in tracking user interactions and sessions for a single day.',
+                                        duration: '24 hours'
+                                    },
+                                    {
+                                        name: '_gat_UA-*',
+                                        description: 'This cookie is used by Google Analytics to store and track data for a specific Google Analytics property, helping to analyze user interactions and improve the website\'s performance.',
+                                        duration: '1 minute'
+                                    },
+                                    {
+                                        name: '_ga_*',
+                                        description: 'Used for tracking data for a specific Google Analytics property.',
+                                        duration: '1 year 1 month 4 days'
+                                    },
+                                ]
+                            }
+                        },
+                        {
+                            title: "Marketing Cookies",
+                            description: "Marketing cookies are used to provide visitors with customized advertisements based on the pages you visited previously and to analyze the effectiveness of the ad campaigns.",
+                            linkedCategory: "marketing",
+                            cookieTable: {
+                                headers: {
+                                    name: 'Cookie',
+                                    description: 'Description',
+                                    duration: 'Duration'
+                                },
+                                body: [
+                                    {
+                                        name: '_fbp',
+                                        description: 'This cookie is used by Facebook to deliver a series of advertisement products, such as real-time bidding from third-party advertisers. It helps in tracking visits across websites and delivering more personalized ads.',
+                                        duration: '90 days'
+                                    },
+                                    {
+                                        name: 'test_cookie',
+                                        description: 'This cookie is used by Google DoubleClick to determine if the user\'s browser supports cookies. It helps in ensuring that other DoubleClick cookies can be set and function properly.',
+                                        duration: '15 minutes'
+                                    },
+                                    {
+                                        name: 'YSC',
+                                        description: 'This cookie is used by YouTube to track views of embedded videos. It ensures that user interactions with videos, such as likes and shares, are recorded and associated with the user\'s account.',
+                                        duration: 'session'
+                                    },
+                                    {
+                                        name: 'VISITOR_INFO1_LIVE',
+                                        description: 'This cookie is used by YouTube to measure your bandwidth to determine whether you get the new or old player interface. It also helps track user preferences and interactions with embedded videos.',
+                                        duration: '6 months'
+                                    },
+                                    {
+                                        name: 'VISITOR_PRIVACY_METADATA',
+                                        description: 'This cookie is used by YouTube to manage and store the user\'s privacy preferences regarding video content. It helps ensure compliance with privacy regulations and user consent for data processing.',
+                                        duration: '6 months'
+                                    },
+                                ]
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    },
+    onChange: function ({ changedCategories }) {
+        if (changedCategories.includes('marketing') || changedCategories.includes('functionality')) {
+            if (CookieConsent.acceptedCategory('marketing') && CookieConsent.acceptedCategory('functionality')) {
+                if (typeof youtubeEmbedUrl !== 'undefined') {
+                    toggleYTVideo(true);
+                    insertIframe()
+                }
+            }
+
+            if (!CookieConsent.acceptedCategory('marketing') || !CookieConsent.acceptedCategory('functionality')) {
+                if (typeof youtubeEmbedUrl !== 'undefined') {
+                    toggleYTVideo(false);
+                    removeIframe();
+                }
+            }
+        }
+
+        handleConsentTypes();
+    },
+    onConsent: function ({ cookie }) {
+        var revisitIcon = document.getElementById('revisit-cookie-consent');
+
+        if (revisitIcon) {
+            revisitIcon.classList.remove('d-none');
+        }
+
+        if (CookieConsent.acceptedCategory('marketing') && CookieConsent.acceptedCategory('functionality')) {
+            if (typeof youtubeEmbedUrl !== 'undefined') {
+                toggleYTVideo(true);
+            }
+        }
+
+        if (!CookieConsent.acceptedCategory('marketing') || !CookieConsent.acceptedCategory('functionality')) {
+            if (typeof youtubeEmbedUrl !== 'undefined') {
+                toggleYTVideo(false);
+            }
+        }
+
+        handleConsentTypes();
+
+        // floating campaign banner
+        var campaignCloseBtn = document.getElementById('btn-close-campaign');
+        var campaignContainer = document.getElementById('campaign-container');
+        var storageKey = "close-campaign-{{ campaign ? campaign.id : '' }}";
+
+        if (!localStorage.getItem(storageKey) && campaignContainer) {
+            campaignContainer.classList.add('d-md-block')
+        }
+
+        if (campaignCloseBtn) {
+            campaignCloseBtn.addEventListener("click", function () {
+                campaignContainer.classList.remove('d-md-block');
+                localStorage.setItem(storageKey, true)
+            });
+        }
+    }
+});
+
+function toggleYTVideo(show) {
+    var ytPlaceholder = document.getElementById('youtube-video-placeholder');
+
+    if (ytPlaceholder) {
+        ytPlaceholder.classList.toggle('d-flex', !show);
+        ytPlaceholder.classList.toggle('d-none', show);
+    }
+}
+
+function insertIframe() {
+    const iframeContainer = document.getElementById('youtube-video-container');
+    iframeContainer.innerHTML = `
+        <iframe width="560" height="315" class="position-absolute w-100 h-100 top-0 left-0 lazyload" src="${youtubeEmbedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+    `;
+}
+
+function removeIframe() {
+    const iframeContainer = document.getElementById('youtube-video-container');
+    iframeContainer.innerHTML = '';
+}
+
+function handleConsentTypes() {
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+
+    const consentState = {
+        ad_storage: CookieConsent.acceptedCategory('marketing') ? 'granted' : 'denied',
+        ad_user_data: CookieConsent.acceptedCategory('marketing') ? 'granted' : 'denied',
+        ad_personalization: CookieConsent.acceptedCategory('marketing') ? 'granted' : 'denied',
+        analytics_storage: CookieConsent.acceptedCategory('analytics') ? 'granted' : 'denied',
+        functionality_storage: CookieConsent.acceptedCategory('functionality') ? 'granted' : 'denied',
+        personalization_storage: CookieConsent.acceptedCategory('functionality') ? 'granted' : 'denied',
+        security_storage: 'granted'
+    };
+
+    gtag('consent', 'update', consentState)
+
+    window.dataLayer.push({
+        event: 'cookie_consent_update',
+        ...consentState
+    });
+}
+
+function getCookie(name) {
+    let value = `; ${document.cookie}`;
+    let parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+    return null;
+}
+
+let cc_cookie = getCookie('cc_cookie');
+
+// Initialize consent types
+if (cc_cookie == null) handleConsentTypes();

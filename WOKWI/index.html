@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Wokwi LED Cube - 16x16x16 Journey</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --ink: #0f172a;
+        --muted: #5b6478;
+        --accent: #e07a3f;
+        --panel: #ffffff;
+        --edge: rgba(15, 23, 42, 0.12);
+        --shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", "Avenir", "Helvetica Neue", sans-serif;
+        color: var(--ink);
+        background: radial-gradient(circle at top, #f7e9dc 0%, #f9f6f1 45%, #eef2f7 100%);
+      }
+
+      header {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 48px 24px 16px;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(28px, 3.6vw, 46px);
+      }
+
+      .lede {
+        margin: 0 0 16px;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.6;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag {
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.06);
+      }
+
+      main {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 0 24px 64px;
+        display: grid;
+        gap: 22px;
+      }
+
+      section {
+        background: var(--panel);
+        border-radius: 20px;
+        border: 1px solid var(--edge);
+        padding: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      section h2 {
+        margin-top: 0;
+        font-size: 20px;
+      }
+
+      ul {
+        padding-left: 18px;
+        margin: 12px 0 0;
+        color: var(--muted);
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      a:hover { text-decoration: underline; }
+
+      code {
+        font-family: "JetBrains Mono", "Courier New", monospace;
+        font-size: 0.95em;
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      img,
+      video {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--edge);
+        display: block;
+        object-fit: cover;
+      }
+
+      .caption {
+        color: var(--muted);
+        font-size: 14px;
+        margin-top: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Wokwi LED Cube - 16x16x16 Journey</h1>
+      <p class="lede">
+        I wanted to build a 16x16x16 "holographic" LED cube. The cube is really a stack of 2D LED matrices,
+        so I started small, simulated the driver stack, and then pushed toward real hardware.
+      </p>
+      <div class="meta">
+        <span class="tag">Wokwi</span>
+        <span class="tag">MBI5124</span>
+        <span class="tag">LED Matrix</span>
+        <span class="tag">PCB</span>
+      </div>
+      <p class="lede"><a href="./" rel="noreferrer">Open WOKWI folder</a></p>
+    </header>
+
+    <main>
+      <section>
+        <h2>Start small: 2x2 matrix</h2>
+        <p class="lede">
+          The first prototype was a tiny 2x2 LED matrix to validate the concept of stacking 2D layers.
+        </p>
+        <img src="./simple_schematic.JPG" alt="Simple LED matrix schematic">
+      </section>
+
+      <section>
+        <h2>Custom MBI5124 simulation</h2>
+        <p class="lede">
+          To simulate a 16-channel current sink (MBI5124), I built a custom Wokwi chip and a diagram
+          generator that lays out two 16x16 layers (2x 16x16) for quick iteration.
+        </p>
+        <ul>
+          <li><code>src/mbi5124.chip.c</code> models SDI/CLK/LE/OE and 16 sinking outputs.</li>
+          <li><code>diagram_generator.py</code> builds the Wokwi JSON with two layers and daisy-chained MBIs.</li>
+          <li><code>.dev-container/Dockerfile</code> sets up the clang+wasm builder and Arduino CLI.</li>
+        </ul>
+        <p class="lede">
+          Build steps (from README):
+          <code>docker build -t wokwi-mbi5124-led-matrix-dev -f .dev-container/Dockerfile .</code>
+        </p>
+        <video controls muted loop autoplay playsinline>
+          <source src="./Code_YEnL5TjdW5_480p.mp4" type="video/mp4">
+        </video>
+        <p class="caption">Two-layer Wokwi simulation (2 x 16x16).</p>
+      </section>
+
+      <section>
+        <h2>PCB design: layer + motherboard</h2>
+        <p class="lede">
+          EasyEDA was not ideal for repeated or programmatic work, so the layer and motherboard layouts were
+          done manually. The layer boards were designed first, then the motherboard.
+        </p>
+        <div class="grid">
+          <div>
+            <img src="./layer_schematic.JPG" alt="Layer schematic">
+            <p class="caption">Layer schematic.</p>
+          </div>
+          <div>
+            <img src="./layer_pcb_layout.JPG" alt="Layer PCB layout">
+            <p class="caption">Layer PCB layout.</p>
+          </div>
+          <div>
+            <video controls muted loop autoplay playsinline>
+              <source src="./layer_pcb3d_480p.mp4" type="video/mp4">
+            </video>
+            <p class="caption">Layer PCB 3D view.</p>
+          </div>
+          <div>
+            <img src="./motherboard.JPG" alt="Motherboard schematic">
+            <p class="caption">Motherboard schematic.</p>
+          </div>
+          <div>
+            <img src="./motherboard_pcblayout.JPG" alt="Motherboard PCB layout">
+            <p class="caption">Motherboard PCB layout.</p>
+          </div>
+          <div>
+            <video controls muted loop autoplay playsinline>
+              <source src="./motherboard_pcb3d_480p.mp4" type="video/mp4">
+            </video>
+            <p class="caption">Motherboard PCB 3D view.</p>
+          </div>
+        </div>
+        <p class="lede">
+          I ordered the boards, but because the PCBs exceeded 100x100 mm, it cost about 200 euros.
+        </p>
+      </section>
+
+      <section>
+        <h2>Hardware tests</h2>
+        <p class="lede">
+          The first hardware test worked on the first try using the code from <code>REAL_LED_MATRIX_NANO</code>.
+          One layer looked great, but at five layers the LED density and thick PCB edges made the cube hard to read.
+        </p>
+        <div class="grid">
+          <div>
+            <video controls muted loop autoplay playsinline>
+              <source src="./1layer_480p.mp4" type="video/mp4">
+            </video>
+            <p class="caption">Single layer test.</p>
+          </div>
+          <div>
+            <video controls muted loop autoplay playsinline>
+              <source src="./5layers_480p.mp4" type="video/mp4">
+            </video>
+            <p class="caption">Five layers stacked.</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Next ideas</h2>
+        <ul>
+          <li>Try transparent PCB material to reduce occlusion.</li>
+          <li>Use modular 100x100 mm boards with larger spacing to cut costs.</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

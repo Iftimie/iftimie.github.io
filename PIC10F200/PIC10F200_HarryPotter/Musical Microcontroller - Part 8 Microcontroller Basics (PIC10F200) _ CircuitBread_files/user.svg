@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51.3 (57544) - http://www.bohemiancoding.com/sketch -->
+    <title>default</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <circle id="path-1" cx="23" cy="23" r="23"></circle>
+    </defs>
+    <g id="Comment-System" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="default">
+            <circle id="Oval" stroke="#E8E8E8" cx="24" cy="24" r="23.5"></circle>
+            <g id="Shape-Clipped" transform="translate(1.000000, 1.000000)">
+                <mask id="mask-2" fill="white">
+                    <use xlink:href="#path-1"></use>
+                </mask>
+                <use id="path-1" fill="#F0F1F2" xlink:href="#path-1"></use>
+                <path d="M27.933594,35.4073685 C27.785156,33.7785692 27.84375,32.6427477 27.84375,31.1559251 C28.574219,30.7694308 29.882813,28.3045407 30.101563,26.2222014 C30.675781,26.1748755 31.582031,25.6109083 31.847656,23.3787031 C31.988281,22.1797804 31.421875,21.5053872 31.074219,21.2924202 C32.007813,18.4568101 33.949219,9.68180069 27.488281,8.77472155 C26.820313,7.59551776 25.117188,7 22.90625,7 C14.050781,7.16564114 12.984375,13.7518276 14.925781,21.2924202 C14.578125,21.5053872 14.011719,22.1797804 14.152344,23.3787031 C14.421875,25.6109083 15.324219,26.1748755 15.898438,26.2222014 C16.117188,28.3045407 17.476563,30.7694308 18.210938,31.1559251 C18.210938,32.6427477 18.265625,33.7785692 18.117188,35.4073685 C16.367188,40.1636204 4.546875,38.8266646 4,48 L42,48 C41.453125,38.8266646 29.683594,40.1636204 27.933594,35.4073685 Z" id="Shape" fill="#2D333B" fill-rule="nonzero" opacity="0.5" mask="url(#mask-2)"></path>
+            </g>
+        </g>
+    </g>
+</svg>

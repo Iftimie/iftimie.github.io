@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ESP32 Bluetooth + SD Audio Pipeline</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --ink: #0f172a;
+        --muted: #5b6478;
+        --accent: #2c7a7b;
+        --panel: #ffffff;
+        --edge: rgba(15, 23, 42, 0.12);
+        --shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", "Avenir", "Helvetica Neue", sans-serif;
+        color: var(--ink);
+        background: radial-gradient(circle at top, #e8f3f4 0%, #f9f6f1 45%, #eef2f7 100%);
+      }
+
+      header {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 48px 24px 16px;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(28px, 3.6vw, 46px);
+      }
+
+      .lede {
+        margin: 0 0 16px;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.6;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag {
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.06);
+      }
+
+      main {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 0 24px 64px;
+        display: grid;
+        gap: 22px;
+      }
+
+      section {
+        background: var(--panel);
+        border-radius: 20px;
+        border: 1px solid var(--edge);
+        padding: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      section h2 {
+        margin-top: 0;
+        font-size: 20px;
+      }
+
+      ul {
+        padding-left: 18px;
+        margin: 12px 0 0;
+        color: var(--muted);
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      code {
+        font-family: "JetBrains Mono", "Courier New", monospace;
+        font-size: 0.95em;
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      audio {
+        width: 100%;
+      }
+
+      .card {
+        border: 1px dashed var(--edge);
+        border-radius: 14px;
+        padding: 16px;
+        background: rgba(15, 23, 42, 0.03);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>ESP32 Bluetooth + SD Audio Pipeline</h1>
+      <p class="lede">
+        A set of related ESP32 experiments that take a WAV file, convert it to raw PCM, load it on the
+        ESP32-CAM SD card, and stream it to Bluetooth headphones.
+      </p>
+      <div class="meta">
+        <span class="tag">ESP32-CAM</span>
+        <span class="tag">A2DP</span>
+        <span class="tag">SD_MMC</span>
+        <span class="tag">Audio</span>
+      </div>
+      <p class="lede">
+        <a href="./" rel="noreferrer">Open group folder</a>
+      </p>
+    </header>
+
+    <main>
+      <section>
+        <h2>Pipeline summary</h2>
+        <ul>
+          <li>Prepare audio: `out.wav` is converted to raw PCM (`out2.raw`) at 44.1 kHz stereo s16le.</li>
+          <li>Upload: copy `out2.raw` to the SD card root on the ESP32-CAM.</li>
+          <li>Stream: A2DP source reads raw bytes from SD and streams to Bluetooth headphones.</li>
+          <li>Variants add connection tests, SD listing, and play/pause control.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Audio sample</h2>
+        <p class="lede">Original WAV used for conversion and testing.</p>
+        <audio controls>
+          <source src="./ESP32_SD_CARD_READS_RAW_AUDIO_HEADPHONES_PLAY/out.wav" type="audio/wav">
+          Your browser does not support the audio element.
+        </audio>
+      </section>
+
+      <section>
+        <h2>Project relationships</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>ESP32 Connect to Headphones</h3>
+            <p class="lede">Minimal A2DP connection test that streams silence to validate pairing.</p>
+            <p class="lede"><a href="./ESP32_Connect_to_headphones">Open folder</a></p>
+          </div>
+          <div class="card">
+            <h3>ESP32 List SD Card</h3>
+            <p class="lede">Utility to mount SD_MMC and list files before playback.</p>
+            <p class="lede"><a href="./ESP32_LIST_SD_CARD">Open folder</a></p>
+          </div>
+          <div class="card">
+            <h3>ESP32 Bluetooth Audio Source</h3>
+            <p class="lede">Baseline A2DP source streaming raw PCM from the SD card.</p>
+            <p class="lede"><a href="./ESP32_Bluetooth">Open folder</a></p>
+          </div>
+          <div class="card">
+            <h3>ESP32 SD Raw Audio Playback</h3>
+            <p class="lede">Streams SD `out2.raw` to headphones and loops when it hits EOF.</p>
+            <p class="lede"><a href="./ESP32_SD_CARD_READS_RAW_AUDIO_HEADPHONES_PLAY">Open folder</a></p>
+          </div>
+          <div class="card">
+            <h3>Playback with Pause</h3>
+            <p class="lede">Adds start/stop cycles and silence padding when paused.</p>
+            <p class="lede"><a href="./ESP32_SD_CARD_READS_RAW_AUDIO_HEADPHONES_PLAY_WITH_PAUSE">Open folder</a></p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Implementation notes</h2>
+        <ul>
+          <li>All variants use `BluetoothA2DPSource` with a `raw_cb` callback feeding bytes.</li>
+          <li>SD_MMC is mounted in 1-bit mode on ESP32-CAM for reliability.</li>
+          <li>The pause variant gates playback with `playEnabled`, zero-fills when stopped, and restarts on demand.</li>
+          <li>Python helpers (`main.py`, `gibberish.py`) preprocess audio into the raw format.</li>
+        </ul>
+        <p class="lede">
+          Example conversion: <code>ffmpeg -i out.wav -ac 2 -ar 44100 -f s16le out2.raw</code>
+        </p>
+      </section>
+    </main>
+  </body>
+</html>

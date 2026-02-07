@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>RadioHeart - RPI Pico Radio Heart IO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --ink: #0f172a;
+        --muted: #5b6478;
+        --accent: #b53a2f;
+        --accent-2: #2c7a7b;
+        --panel: #ffffff;
+        --edge: rgba(15, 23, 42, 0.12);
+        --shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", "Avenir", "Helvetica Neue", sans-serif;
+        color: var(--ink);
+        background: radial-gradient(circle at top, #f7e7e4 0%, #f9f6f1 45%, #eef2f7 100%);
+      }
+
+      header {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 48px 24px 16px;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(28px, 3.6vw, 46px);
+      }
+
+      .lede {
+        margin: 0 0 16px;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.6;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag {
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.06);
+      }
+
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 0 24px 64px;
+        display: grid;
+        gap: 22px;
+      }
+
+      section {
+        background: var(--panel);
+        border-radius: 20px;
+        border: 1px solid var(--edge);
+        padding: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      section h2 {
+        margin-top: 0;
+        font-size: 20px;
+      }
+
+      ul {
+        padding-left: 18px;
+        margin: 12px 0 0;
+        color: var(--muted);
+      }
+
+      a {
+        color: var(--accent-2);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      code {
+        font-family: "JetBrains Mono", "Courier New", monospace;
+        font-size: 0.95em;
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      video {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--edge);
+      }
+
+      img {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--edge);
+        display: block;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>RadioHeart - RPI Pico Radio Heart IO</h1>
+      <p class="lede">
+        A pair of connected devices that signal presence through light and touch. This build combines a
+        Raspberry Pi Pico, a LoRa radio module, and a simple touch interface to keep two people connected
+        when they are within range.
+      </p>
+      <div class="meta">
+        <span class="tag">Raspberry Pi Pico</span>
+        <span class="tag">PlatformIO</span>
+        <span class="tag">LoRa</span>
+        <span class="tag">Touch IO</span>
+      </div>
+      <p class="lede">
+        <a href="./" rel="noreferrer">Open project folder</a> ·
+        <a href="../RadioHeartWebpage/index.html" rel="noreferrer">Product concept page</a>
+      </p>
+    </header>
+
+    <main>
+      <section>
+        <h2>Origin story</h2>
+        <p class="lede">
+          I got interested in radio and bought LoRa modules to test range. In early field tests I managed
+          about 1 km without too many obstructions. That sparked the idea for a product with no moving parts.
+          I paused further optimization to focus on learning how to sell and validate the idea first.
+        </p>
+      </section>
+
+      <section>
+        <h2>Product idea</h2>
+        <p class="lede">
+          The concept is a pair of hearts for couples that softly glow to show when the other is in range.
+          A touch pattern on one device plays back on the other, giving a simple way to say hello.
+        </p>
+      </section>
+
+      <section>
+        <h2>Media</h2>
+        <div class="grid">
+          <div>
+            <video controls>
+              <source src="./demo_480p.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <p class="lede">Device demo.</p>
+          </div>
+          <div>
+            <video controls>
+              <source src="./pcb_480p.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <p class="lede">PCB preview.</p>
+          </div>
+          <div>
+            <video controls>
+              <source src="./soldered_480p.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <p class="lede">Soldered build.</p>
+          </div>
+          <div>
+            <video controls>
+              <source src="./fusion360_480p.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <p class="lede">Fusion 360 model.</p>
+          </div>
+          <div>
+            <img src="./pcblayout.JPG" alt="PCB layout">
+            <p class="lede">PCB layout (EasyEDA).</p>
+          </div>
+          <div>
+            <img src="./schematic.JPG" alt="Schematic">
+            <p class="lede">Schematic (EasyEDA).</p>
+          </div>
+        </div>
+        <p class="lede">
+          EasyEDA backup: <a href="./BackupProjects_iftimie.alexandru.florentin_personal_0_20260206.zip">BackupProjects_iftimie.alexandru.florentin_personal_0_20260206.zip</a>
+        </p>
+      </section>
+
+      <section>
+        <h2>Technical overview</h2>
+        <ul>
+          <li>Radio stack uses RadioLib with the LLCC68 module at 433 MHz.</li>
+          <li>Transmit config: TX power 10 dBm, bandwidth 250 kHz, SF7, CR5, CRC enabled, sync word 0x12.</li>
+          <li>Touch input records HIGH/LOW segments in 10 ms ticks and sends them with ACK retries.</li>
+          <li>Signal LED brightness maps RSSI/SNR into a combined quality score and fades over time.</li>
+          <li>Periodic PING packets keep presence updated even without touch input.</li>
+        </ul>
+        <p class="lede">
+          Key files: <code>src/main.cpp</code>, <code>src/radio.cpp</code>, <code>src/touch_io.cpp</code>,
+          <code>src/protocol.cpp</code>, <code>include/config.h</code>.
+        </p>
+      </section>
+
+    </main>
+  </body>
+</html>

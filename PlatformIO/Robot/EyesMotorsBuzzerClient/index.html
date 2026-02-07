@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Robot - Eyes, Motors, Buzzer Client</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --ink: #0f172a;
+        --muted: #5b6478;
+        --accent: #e07a3f;
+        --panel: #ffffff;
+        --edge: rgba(15, 23, 42, 0.12);
+        --shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", "Avenir", "Helvetica Neue", sans-serif;
+        color: var(--ink);
+        background: radial-gradient(circle at top, #f4efe8 0%, #f9f6f1 45%, #eef2f7 100%);
+      }
+
+      header {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 48px 24px 16px;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(28px, 3.6vw, 46px);
+      }
+
+      .lede {
+        margin: 0 0 16px;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.6;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag {
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.06);
+      }
+
+      main {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 0 24px 64px;
+        display: grid;
+        gap: 22px;
+      }
+
+      section {
+        background: var(--panel);
+        border-radius: 20px;
+        border: 1px solid var(--edge);
+        padding: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      section h2 {
+        margin-top: 0;
+        font-size: 20px;
+      }
+
+      ul {
+        padding-left: 18px;
+        margin: 12px 0 0;
+        color: var(--muted);
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      code {
+        font-family: "JetBrains Mono", "Courier New", monospace;
+        font-size: 0.95em;
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      video,
+      img {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--edge);
+        display: block;
+        object-fit: cover;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Robot - Eyes, Motors, Buzzer Client</h1>
+      <p class="lede">
+        A remote-controlled robot concept combining ESP32-CAM, motors, LED-matrix eyes, and a buzzer.
+        This is the first full client build, with iterative hardware revisions and a custom PCB.
+      </p>
+      <div class="meta">
+        <span class="tag">ESP32-CAM</span>
+        <span class="tag">PlatformIO</span>
+        <span class="tag">WebSocket</span>
+        <span class="tag">Robotics</span>
+      </div>
+      <p class="lede">
+        <a href="./" rel="noreferrer">Open project folder</a> ·
+        <a href="../WebServer" rel="noreferrer">Related: WebServer</a> ·
+        <a href="../../../../DigisparkAttimyPWMUART_Robot" rel="noreferrer">Related: ATtiny Motor Driver</a>
+      </p>
+    </header>
+
+    <main>
+      <section>
+        <h2>Story</h2>
+        <p class="lede">
+          I wanted to build a compact robot inspired by WALL-E: ESP32-CAM for vision, motors for movement,
+          LED matrix eyes for expression, and a buzzer for sounds. The first version worked, but it had a lot
+          of cables and everything was crammed into the small head. One bad touch could short something.
+        </p>
+        <p class="lede">
+          To clean up the wiring, I learned EasyEDA and designed my first PCB for the robot. The board was
+          mostly header pins so I could plug components without soldering. When the PCBs arrived, I still had
+          to solder the headers and fix a footprint mistake with a couple of jumper wires, but the board worked.
+        </p>
+      </section>
+
+      <section>
+        <h2>Media</h2>
+        <div class="grid">
+          <div>
+            <video controls>
+              <source src="./second_480p.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <p class="lede">Second build pass.</p>
+          </div>
+          <div>
+            <video controls>
+              <source src="./first_version_480p_loud.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <p class="lede">First working version.</p>
+          </div>
+          <div>
+            <video controls>
+              <source src="./first_version_inside_480p.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <p class="lede">Inside the first version.</p>
+          </div>
+          <div>
+            <video controls>
+              <source src="./first_version_commands_480p.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <p class="lede">Command tests.</p>
+          </div>
+          <div>
+            <video controls>
+              <source src="./Fusion360_V3gk8gNVU6_480p.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <p class="lede">Fusion 360 model.</p>
+          </div>
+          <div>
+            <video controls>
+              <source src="./3dpcb_480p.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <p class="lede">3D PCB preview.</p>
+          </div>
+          <div>
+            <video controls>
+              <source src="./delivered_pcbs_480p.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <p class="lede">Delivered PCBs.</p>
+          </div>
+          <div>
+            <img src="./schematic.JPG" alt="Robot schematic">
+            <p class="lede">Schematic (EasyEDA).</p>
+          </div>
+          <div>
+            <img src="./pcblayout.JPG" alt="Robot PCB layout">
+            <p class="lede">PCB layout (EasyEDA).</p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Hardware revisions</h2>
+        <ul>
+          <li>First version: fully wired build, hard to manage, high risk of shorts.</li>
+          <li>PCB v1: EasyEDA layout with header pins to simplify assembly.</li>
+          <li>Post-assembly: small rework due to footprint mismatch, but functional.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Software architecture</h2>
+        <ul>
+          <li>FreeRTOS tasks split responsibilities: WebSocket, Eyes, Audio, Motors.</li>
+          <li>WebSocketTask connects to the control server and parses commands or grouped JSON.</li>
+          <li>EyesTask runs LED matrix emotions, text, and sequences via a dedicated adapter.</li>
+          <li>MotorsTask sends movement commands over UART to an ATtiny motor driver.</li>
+          <li>Command queues coordinate actions and report done events for sequencing.</li>
+        </ul>
+        <p class="lede">
+          Key files: <code>src/main.cpp</code>, <code>src/tasks/WebSocketTask.cpp</code>,
+          <code>src/tasks/EyesTask.cpp</code>, <code>src/tasks/MotorsTask.cpp</code>.
+        </p>
+      </section>
+
+      <section>
+        <h2>Related projects</h2>
+        <ul>
+          <li><strong>WebServer</strong>: FastAPI broadcaster that sends command strings to WebSocket clients.</li>
+          <li><strong>ATtiny motor driver</strong>: UART batch parser and software PWM driver on a Digispark ATtiny85.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>CAD + EasyEDA files</h2>
+        <ul>
+          <li><a href="./robot.step">robot.step</a></li>
+          <li><a href="./robot2.step">robot2.step</a></li>
+          <li><a href="./BackupProjects_iftimie.alexandru.florentin_personal_1_20260206.zip">EasyEDA backup ZIP</a></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

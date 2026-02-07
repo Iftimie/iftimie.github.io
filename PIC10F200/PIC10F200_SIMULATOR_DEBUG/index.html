@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PIC10F200 Simulator Debug</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --ink: #0f172a;
+        --muted: #5b6478;
+        --accent: #2c7a7b;
+        --paper: #f9f6f1;
+        --panel: #ffffff;
+        --edge: rgba(15, 23, 42, 0.12);
+        --shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", "Avenir", "Helvetica Neue", sans-serif;
+        color: var(--ink);
+        background: radial-gradient(circle at top, #e9f3f2 0%, #f9f6f1 45%, #eef2f7 100%);
+      }
+
+      header {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 44px 24px 16px;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(26px, 3.2vw, 40px);
+      }
+
+      .lede {
+        margin: 0 0 16px;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1.6;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag {
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.06);
+      }
+
+      main {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 24px 56px;
+        display: grid;
+        gap: 20px;
+      }
+
+      section {
+        background: var(--panel);
+        border-radius: 18px;
+        border: 1px solid var(--edge);
+        padding: 22px;
+        box-shadow: var(--shadow);
+      }
+
+      section h2 {
+        margin-top: 0;
+        font-size: 18px;
+      }
+
+      .media {
+        border-radius: 14px;
+        border: 1px dashed var(--edge);
+        background: rgba(15, 23, 42, 0.03);
+        padding: 16px;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      video {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--edge);
+      }
+
+      ul {
+        padding-left: 18px;
+        margin: 12px 0 0;
+        color: var(--muted);
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>PIC10F200 Simulator Debug</h1>
+      <p class="lede">
+        MPLAB X simulation setup to debug PIC10F200 assembly without flashing hardware.
+        Starts with a simple LED blink to validate timing and breakpoints before moving to larger programs.
+      </p>
+      <div class="meta">
+        <span class="tag">PIC10F200</span>
+        <span class="tag">MPLAB X</span>
+        <span class="tag">Assembly</span>
+        <span class="tag">Simulation</span>
+      </div>
+      <p class="lede">
+        <a href="./" rel="noreferrer">Open project folder</a>
+      </p>
+    </header>
+
+    <main>
+      <section>
+        <h2>Goal</h2>
+        <p class="lede">
+          I wanted a way to debug assembly code without repeatedly burning the chip.
+          MPLAB X's simulator makes it possible to step through instructions, inspect registers,
+          and verify pin toggles before committing to hardware.
+        </p>
+      </section>
+
+      <section>
+        <h2>What is included</h2>
+        <ul>
+          <li>MPLAB X project scaffolding for PIC10F200 simulation.</li>
+          <li>A basic LED blink routine to validate timing and IO setup.</li>
+          <li>Debug workflow that scales to more complex assembly programs.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Media</h2>
+        <video controls>
+          <source src="./mplab_ide64_Bttc09pD27_480p.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+        <p class="lede">MPLAB X simulator walkthrough (compressed).</p>
+      </section>
+    </main>
+  </body>
+</html>

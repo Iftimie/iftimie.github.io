@@ -1,0 +1,157 @@
+/**
+ * Font Sizer - Reusable font size controller
+ *
+ * Usage:
+ * FontSizer.init({
+ *     contentSelector: '.sf-content',
+ *     storageKey: 'cb_tutorial_font_size',
+ *     minSize: 14,
+ *     maxSize: 24,
+ *     step: 1,
+ *     defaultSize: 16
+ * });
+ */
+var FontSizer = (function() {
+    'use strict';
+
+    var config = {
+        contentSelector: '.sf-content',
+        storageKey: 'cb_font_size',
+        minSize: 14,
+        maxSize: 24,
+        step: 1,
+        defaultSize: 16
+    };
+
+    var currentSize;
+
+    /**
+     * Update button states based on current size
+     */
+    function updateButtonStates() {
+        var $decreaseBtn = $('.btn-font-decrease');
+        var $increaseBtn = $('.btn-font-increase');
+
+        // Cursor styling is now handled by CSS using [disabled] attribute selector
+        if (currentSize <= config.minSize) {
+            $decreaseBtn.prop('disabled', true).css('opacity', '0.5');
+        } else {
+            $decreaseBtn.prop('disabled', false).css('opacity', '1');
+        }
+
+        if (currentSize >= config.maxSize) {
+            $increaseBtn.prop('disabled', true).css('opacity', '0.5');
+        } else {
+            $increaseBtn.prop('disabled', false).css('opacity', '1');
+        }
+    }
+
+    /**
+     * Apply font size to content elements
+     */
+    function applyFontSize(size) {
+        var pixelSize = size + 'px';
+        var selector = config.contentSelector;
+
+        // Calculate proportional line height (1.6 is a good ratio for readability)
+        var lineHeight = Math.round(size * 1.6) + 'px';
+
+        // Target all text elements within content selector
+        var textElements = selector + ' p, ' + selector + ' li, ' + selector + ' td, ' + selector + ' th, ' +
+                          selector + ' span, ' + selector + ' div, ' + selector + ' h1, ' + selector + ' h2, ' +
+                          selector + ' h3, ' + selector + ' h4, ' + selector + ' h5, ' + selector + ' h6';
+
+        $(textElements).css({
+            'font-size': pixelSize,
+            'line-height': lineHeight
+        });
+        localStorage.setItem(config.storageKey, size);
+        currentSize = size;
+        updateButtonStates();
+    }
+
+    /**
+     * Attach event handlers
+     */
+    function attachEventHandlers() {
+        // Toggle dropdown
+        $('.btn-font-stepper-toggle').on('click', function(e) {
+            e.stopPropagation();
+            var $dropdown = $('.font-stepper-dropdown');
+            if ($dropdown.hasClass('d-none')) {
+                $dropdown.removeClass('d-none').addClass('d-flex').hide().fadeIn(200);
+            } else {
+                $dropdown.fadeOut(200, function() {
+                    $(this).removeClass('d-flex').addClass('d-none').show();
+                });
+            }
+        });
+
+        // Close dropdown when clicking outside
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.font-stepper-container').length) {
+                var $dropdown = $('.font-stepper-dropdown');
+                $dropdown.fadeOut(200, function() {
+                    $(this).removeClass('d-flex').addClass('d-none').show();
+                });
+            }
+        });
+
+        // Decrease font size with hover effect
+        $('.btn-font-decrease').on('mouseenter', function() {
+            if (!$(this).prop('disabled')) {
+                $(this).find('.normal').hide();
+                $(this).find('.active').show();
+            }
+        }).on('mouseleave', function() {
+            $(this).find('.normal').show();
+            $(this).find('.active').hide();
+        }).on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (currentSize > config.minSize) {
+                applyFontSize(currentSize - config.step);
+            }
+        });
+
+        // Increase font size with hover effect
+        $('.btn-font-increase').on('mouseenter', function() {
+            if (!$(this).prop('disabled')) {
+                $(this).find('.normal').hide();
+                $(this).find('.active').show();
+            }
+        }).on('mouseleave', function() {
+            $(this).find('.normal').show();
+            $(this).find('.active').hide();
+        }).on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (currentSize < config.maxSize) {
+                applyFontSize(currentSize + config.step);
+            }
+        });
+    }
+
+    /**
+     * Initialize font sizer
+     * @param {Object} options - Configuration options
+     */
+    function init(options) {
+        // Merge options with defaults
+        config = $.extend({}, config, options);
+
+        // Get saved font size or use default
+        currentSize = parseInt(localStorage.getItem(config.storageKey)) || config.defaultSize;
+
+        // Apply initial font size
+        applyFontSize(currentSize);
+
+        // Attach event handlers
+        attachEventHandlers();
+    }
+
+    // Public API
+    return {
+        init: init
+    };
+})();

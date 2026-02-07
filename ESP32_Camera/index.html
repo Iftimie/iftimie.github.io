@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ESP32-CAM Streaming Suite</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --ink: #0f172a;
+        --muted: #5b6478;
+        --accent: #2c7a7b;
+        --panel: #ffffff;
+        --edge: rgba(15, 23, 42, 0.12);
+        --shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", "Avenir", "Helvetica Neue", sans-serif;
+        color: var(--ink);
+        background: radial-gradient(circle at top, #e7f1f2 0%, #f9f6f1 45%, #eef2f7 100%);
+      }
+
+      header {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 48px 24px 16px;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(28px, 3.6vw, 46px);
+      }
+
+      .lede {
+        margin: 0 0 16px;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.6;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag {
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.06);
+      }
+
+      main {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 0 24px 64px;
+        display: grid;
+        gap: 22px;
+      }
+
+      section {
+        background: var(--panel);
+        border-radius: 20px;
+        border: 1px solid var(--edge);
+        padding: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      section h2 {
+        margin-top: 0;
+        font-size: 20px;
+      }
+
+      ul {
+        padding-left: 18px;
+        margin: 12px 0 0;
+        color: var(--muted);
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      a:hover { text-decoration: underline; }
+
+      code {
+        font-family: "JetBrains Mono", "Courier New", monospace;
+        font-size: 0.95em;
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      .card {
+        border: 1px dashed var(--edge);
+        border-radius: 14px;
+        padding: 16px;
+        background: rgba(15, 23, 42, 0.03);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>ESP32-CAM Streaming Suite</h1>
+      <p class="lede">
+        A family of ESP32-CAM sketches for bring-up, local web streaming, and pushing frames to a server
+        via HTTP or WebSockets.
+      </p>
+      <div class="meta">
+        <span class="tag">ESP32-CAM</span>
+        <span class="tag">Streaming</span>
+        <span class="tag">WiFi</span>
+        <span class="tag">JPEG / RAW</span>
+      </div>
+      <p class="lede"><a href="./" rel="noreferrer">Open project folder</a></p>
+    </header>
+
+    <main>
+      <section>
+        <h2>How the variants relate</h2>
+        <ul>
+          <li><strong>Simple Setup</strong> verifies pinout, PSRAM, and capture reliability.</li>
+          <li><strong>Camera WebServer</strong> provides a local web UI and live stream.</li>
+          <li><strong>HTTP Upload</strong> captures grayscale frames, converts to JPEG, and POSTs to a server.</li>
+          <li><strong>WebSocket JPEG</strong> pushes JPEG frames over a WS binary channel.</li>
+          <li><strong>WebSocket Raw</strong> sends raw grayscale frames with a width/height header.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>Project map</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>SimpleCameraSetup</h3>
+            <p class="lede">Minimal capture test with tiny frames and extra diagnostics.</p>
+            <p class="lede"><a href="./SimpleCameraSetup">Open folder</a></p>
+          </div>
+          <div class="card">
+            <h3>CameraWebServer</h3>
+            <p class="lede">Local web UI / MJPEG stream baseline.</p>
+            <p class="lede"><a href="./CameraWebServer">Open folder</a></p>
+          </div>
+          <div class="card">
+            <h3>ESP32_VIDEO_STREAMING</h3>
+            <p class="lede">HTTP POST of JPEG frames derived from grayscale.</p>
+            <p class="lede"><a href="./ESP32_VIDEO_STREAMING">Open folder</a></p>
+          </div>
+          <div class="card">
+            <h3>ESP32_VIDEO_STREAMING_WEBSOCKET</h3>
+            <p class="lede">WebSocket binary JPEG streaming.</p>
+            <p class="lede"><a href="./ESP32_VIDEO_STREAMING_WEBSOCKET">Open folder</a></p>
+          </div>
+          <div class="card">
+            <h3>ESP32_VIDEO_STREAMING_WEBSOCKET_NO_FPEG</h3>
+            <p class="lede">Raw grayscale streaming with width/height header.</p>
+            <p class="lede"><a href="./ESP32_VIDEO_STREAMING_WEBSOCKET_NO_FPEG">Open folder</a></p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Implementation notes</h2>
+        <ul>
+          <li>All streaming variants use <code>esp_camera_fb_get()</code> and return buffers promptly.</li>
+          <li>JPEG conversion uses <code>fmt2jpg()</code> on grayscale frames (quality ~30).</li>
+          <li>WebSocket RAW includes an 8-byte header (width + height) before pixel data.</li>
+          <li>WiFi reconnect logic is basic; restart is used on timeouts.</li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

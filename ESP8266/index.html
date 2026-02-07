@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Desk Companion - ESP8266 Experiments</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --ink: #0f172a;
+        --muted: #5b6478;
+        --accent: #6b4cff;
+        --panel: #ffffff;
+        --edge: rgba(15, 23, 42, 0.12);
+        --shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", "Avenir", "Helvetica Neue", sans-serif;
+        color: var(--ink);
+        background: radial-gradient(circle at top, #efeaff 0%, #f9f6f1 45%, #eef2f7 100%);
+      }
+
+      header {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 48px 24px 16px;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(28px, 3.6vw, 46px);
+      }
+
+      .lede {
+        margin: 0 0 16px;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.6;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag {
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.06);
+      }
+
+      main {
+        max-width: 980px;
+        margin: 0 auto;
+        padding: 0 24px 64px;
+        display: grid;
+        gap: 22px;
+      }
+
+      section {
+        background: var(--panel);
+        border-radius: 20px;
+        border: 1px solid var(--edge);
+        padding: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      section h2 {
+        margin-top: 0;
+        font-size: 20px;
+      }
+
+      ul {
+        padding-left: 18px;
+        margin: 12px 0 0;
+        color: var(--muted);
+      }
+
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      a:hover { text-decoration: underline; }
+
+      code {
+        font-family: "JetBrains Mono", "Courier New", monospace;
+        font-size: 0.95em;
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      .card {
+        border: 1px dashed var(--edge);
+        border-radius: 14px;
+        padding: 16px;
+        background: rgba(15, 23, 42, 0.03);
+      }
+
+      audio {
+        width: 100%;
+      }
+
+      video {
+        width: 100%;
+        border-radius: 12px;
+        border: 1px solid var(--edge);
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Desk Companion - ESP8266 Experiments</h1>
+      <p class="lede">
+        A small desk companion concept: a simple OLED screen with two touch inputs that greets you,
+        shares random facts, and slowly reveals a mysterious story through droid-like audio clips.
+        The idea is a branching narrative where your button choices change how the companion responds.
+      </p>
+      <div class="meta">
+        <span class="tag">ESP8266</span>
+        <span class="tag">OLED</span>
+        <span class="tag">Touch</span>
+        <span class="tag">Audio</span>
+      </div>
+      <p class="lede"><a href="./" rel="noreferrer">Open project folder</a></p>
+    </header>
+
+    <main>
+      <section>
+        <h2>Concept</h2>
+        <p class="lede">
+          It starts with a friendly boot-up and random facts, but a strange noise appears. The companion
+          discovers memory corruption and hidden messages. With only two buttons, the story branches into
+          different interpretations of the entity communicating through the device.
+        </p>
+        <p class="lede">
+          <a href="./DeskCompanionScripts/story.xmind">Story flow map (XMind)</a>
+        </p>
+      </section>
+
+      <section>
+        <h2>Prototype map</h2>
+        <div class="grid">
+          <div class="card">
+            <h3>OLED + Touch UI</h3>
+            <p class="lede">Boot animation, eyes, scope, and fact screens.</p>
+            <p class="lede"><a href="./ESP8266_OLED_AND_TOUCH_SENSOR_AI">Open folder</a></p>
+          </div>
+          <div class="card">
+            <h3>OLED Hello</h3>
+            <p class="lede">Minimal OLED bring-up to validate wiring.</p>
+            <p class="lede"><a href="./ESP8666_OLED">Open folder</a></p>
+          </div>
+          <div class="card">
+            <h3>Arduino MP3 Playback</h3>
+            <p class="lede">SPIFFS MP3 playback with I2S (NoDAC).</p>
+            <p class="lede"><a href="./ESP8266_PLAY_RAW_TO_AMPLIFIER_SPEAKER">Open folder</a></p>
+          </div>
+          <div class="card">
+            <h3>PlatformIO MP3 Playback</h3>
+            <p class="lede">Same playback pipeline, easier SPIFFS uploads and iterations.</p>
+            <p class="lede"><a href="../PlatformIO/ESP8266_RAW_AUDIO_AMPLIFIER">Open folder</a></p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Story audio samples</h2>
+        <div class="grid">
+          <div class="card">
+            <p class="lede"><strong>S0</strong> - Initial greeting</p>
+            <audio controls>
+              <source src="./DeskCompanionScripts/story/S0.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+          <div class="card">
+            <p class="lede"><strong>S2</strong> - Glitch moment</p>
+            <audio controls>
+              <source src="./DeskCompanionScripts/story/S2.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+          <div class="card">
+            <p class="lede"><strong>S5</strong> - First message</p>
+            <audio controls>
+              <source src="./DeskCompanionScripts/story/S5.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+          <div class="card">
+            <p class="lede"><strong>S8</strong> - Reply arrives</p>
+            <audio controls>
+              <source src="./DeskCompanionScripts/story/S8.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+          <div class="card">
+            <p class="lede"><strong>S10</strong> - Message incoming</p>
+            <audio controls>
+              <source src="./DeskCompanionScripts/story/S10.mp3" type="audio/mpeg">
+            </audio>
+          </div>
+        </div>
+        <p class="lede">Voice clips were generated with text-to-speech using https://toolkit.artlist.io/.</p>
+      </section>
+
+      <section>
+        <h2>Media</h2>
+        <div class="grid">
+          <div class="card">
+            <video controls>
+              <source src="./826125f8-e4cc-4ea5-8287-4efb8d316749_480p.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <div class="card">
+            <video controls>
+              <source src="./17380989-77d4-4498-8924-b38a507555bb_480p.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Story assets</h2>
+        <ul>
+          <li><a href="./DeskCompanionScripts/story.docx">story.docx</a></li>
+          <li><a href="./DeskCompanionScripts/story.xmind">story.xmind</a></li>
+          <li><a href="./DeskCompanionScripts/story">Story scripts folder</a></li>
+        </ul>
+      </section>
+    </main>
+  </body>
+</html>

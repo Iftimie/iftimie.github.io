@@ -1,33 +1,276 @@
-<div class="container">
-  <div class="keyboard"></div>
-</div>
-<div class="settingsBar">
-  <div class="left">
-    <span>Volume: </span>
-    <input
-      type="range"
-      min="0.0"
-      max="1.0"
-      step="0.01"
-      value="0.5"
-      list="volumes"
-      name="volume" />
-    <datalist id="volumes">
-      <option value="0.0" label="Mute"></option>
-      <option value="1.0" label="100%"></option>
-    </datalist>
-  </div>
-  <div class="right">
-    <span>Current waveform: </span>
-    <select name="waveform">
-      <option value="sine">Sine</option>
-      <option value="square" selected>Square</option>
-      <option value="sawtooth">Sawtooth</option>
-      <option value="triangle">Triangle</option>
-      <option value="custom">Custom</option>
-    </select>
-  </div>
-</div>
-<button id="playSeq">Play sequence</button>
-<script type="text/javascript" src="main.js"></script>
-<link rel="stylesheet" href="main.css">
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>PIC10F200 Harry Potter Melody</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        --ink: #0f172a;
+        --muted: #5b6478;
+        --accent: #e07a3f;
+        --accent-2: #2c7a7b;
+        --paper: #f9f6f1;
+        --panel: #ffffff;
+        --edge: rgba(15, 23, 42, 0.12);
+        --shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Space Grotesk", "Avenir", "Helvetica Neue", sans-serif;
+        color: var(--ink);
+        background: radial-gradient(circle at top, #fbe9d7 0%, #f9f6f1 40%, #eef2f7 100%);
+      }
+
+      header {
+        padding: 48px 24px 24px;
+        max-width: 960px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: clamp(28px, 3.6vw, 44px);
+      }
+
+      .lede {
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.6;
+        margin: 0 0 16px;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .tag {
+        font-size: 12px;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: rgba(15, 23, 42, 0.06);
+      }
+
+      main {
+        max-width: 960px;
+        margin: 0 auto;
+        padding: 0 24px 64px;
+        display: grid;
+        gap: 24px;
+      }
+
+      section {
+        background: var(--panel);
+        border-radius: 20px;
+        border: 1px solid var(--edge);
+        padding: 24px;
+        box-shadow: var(--shadow);
+      }
+
+      section h2 {
+        margin-top: 0;
+        font-size: 20px;
+      }
+
+      ul {
+        padding-left: 18px;
+        margin: 12px 0 0;
+        color: var(--muted);
+      }
+
+      a {
+        color: var(--accent-2);
+        text-decoration: none;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+
+      code {
+        font-family: "JetBrains Mono", "Courier New", monospace;
+        font-size: 0.95em;
+      }
+
+      .grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      }
+
+      .media {
+        border-radius: 14px;
+        border: 1px dashed var(--edge);
+        background: rgba(15, 23, 42, 0.03);
+        padding: 16px;
+        text-align: center;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 12px;
+      }
+
+      video {
+        width: 100%;
+        border-radius: 14px;
+        border: 1px solid var(--edge);
+      }
+
+      .compare {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }
+
+      .compare h3 {
+        margin-top: 0;
+        font-size: 16px;
+      }
+
+      footer {
+        text-align: center;
+        color: var(--muted);
+        font-size: 13px;
+        padding: 0 24px 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>PIC10F200 Harry Potter Melody</h1>
+      <p class="lede">
+        A tiny PIC10F200 plays Hedwig's Theme on a scavenged headset speaker, built as a holiday ornament.
+        This started from a CircuitBread tutorial on generating music with a buzzer, then I transcribed the
+        Harry Potter melody into assembly and wrapped it in a 3D-printed globe.
+      </p>
+      <div class="meta">
+        <span class="tag">PIC10F200</span>
+        <span class="tag">Assembly</span>
+        <span class="tag">Buzzer</span>
+        <span class="tag">3D Print</span>
+      </div>
+      <p class="lede">
+        <a href="../" rel="noreferrer">Open project folder</a>
+      </p>
+    </header>
+
+    <main>
+      <section>
+        <h2>Origins</h2>
+        <p>
+          The baseline is the CircuitBread tutorial
+          <a href="https://www.circuitbread.com/tutorials/musical-microcontroller-part-8-microcontroller-basics-pic10f200" target="_blank" rel="noreferrer noopener">
+            Musical Microcontroller - Part 8 (PIC10F200)
+          </a>.
+          The article explains how to toggle a GPIO pin at audio frequencies using precise delay loops,
+          how note timing is derived from period counts, and why limited flash means a melody must reuse
+          a small set of notes. It also highlights using `XORWF` to toggle GP2 efficiently and `SLEEP`
+          for low-power idle.
+        </p>
+      </section>
+
+      <section>
+        <h2>Media</h2>
+        <div class="grid">
+          <div>
+            <video controls>
+              <source src="../demo_480p.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+            <p class="lede">Demo video (compressed).</p>
+          </div>
+          <div class="media">
+            <img src="../demo.JPG" alt="PIC10F200 ornament photo">
+          </div>
+          <div class="media">
+            <img src="../fusion360.JPG" alt="Fusion360 model render">
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Music source</h2>
+        <p>
+          I wanted a holiday-themed build, so I picked Hedwig's Theme. I referenced the sheet music at
+          <a href="https://www.musicnotes.com/sheetmusic/harry-potter/hedwigs-theme/MN0127623" target="_blank" rel="noreferrer noopener">
+            MusicNotes
+          </a>
+          and translated the notes into the PIC assembly sequence.
+        </p>
+      </section>
+
+      <section>
+        <h2>Implementation highlights (PIC10F200)</h2>
+        <ul>
+          <li>Note durations are defined as `quarter_note`, `half_note`, and `dotted_half_note` units.</li>
+          <li>`NOTE_BODY` toggles GP2 at the note frequency and alternates LEDs via `TOGGLE_LED`.</li>
+          <li>Each note stub sets `d1c`, `d2c`, and `unitc` for timing precision, then jumps to `NOTE_BODY`.</li>
+          <li>Tempo is controlled by `UNIT_PERIODS` and the per-note period count.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2>ESP32 port comparison</h2>
+        <div class="compare">
+          <div>
+            <h3>PIC10F200 assembly</h3>
+            <ul>
+              <li>Hand-tuned delay loops per note (`d1`, `d2`, `unitc`).</li>
+              <li>GPIO toggled in a tight loop for square-wave audio.</li>
+              <li>Durations defined by repeating period blocks.</li>
+            </ul>
+          </div>
+          <div>
+            <h3>ESP32 implementation</h3>
+            <ul>
+              <li>Table-driven `Step` list with frequency (Hz) and duration (ms).</li>
+              <li>LEDC hardware tone generation for stable pitch.</li>
+              <li>Articulation via a small `GAP_MS` between notes.</li>
+            </ul>
+            <p>
+              Source: <code>ESP32_HarryPotter/ESP32_HarryPotter.ino</code>
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2>Physical build</h2>
+        <p>
+          The circuit lives inside a 3D-printed globe ornament. I cut a tiny speaker from a headset,
+          wired it to the PIC10F200 output pin through a resistor, and powered it with a small battery.
+          The model file is <code>board+case.f3d</code>.
+        </p>
+      </section>
+
+      <section>
+        <h2>Notes</h2>
+        <p>
+          This folder also contains a simple web piano used for quick square-wave note checks.
+          It is based on a basic tutorial example and wasn’t central to the final build.
+        </p>
+      </section>
+    </main>
+
+    <footer>
+      Built for the electronics portfolio.
+    </footer>
+  </body>
+</html>
